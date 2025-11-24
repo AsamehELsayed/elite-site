@@ -1,0 +1,127 @@
+#infinite-grid-menu-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: grab;
+}
+
+.face-title {
+  position: absolute;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+  z-index: 100;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+  width: 90%;
+  max-width: 1200px;
+}
+
+.face-title.active {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.face-title.inactive {
+  opacity: 0;
+  transform: translateX(-50%) translateY(20px);
+}
+
+.face-description {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  z-index: 100;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+  width: 90%;
+  max-width: 800px;
+}
+
+.face-description.active {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.face-description.inactive {
+  opacity: 0;
+  transform: translateX(-50%) translateY(20px);
+}
+
+.action-button {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.2);
+  border: 2px solid rgba(212, 175, 55, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  transition: opacity 0.3s ease, transform 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+  backdrop-filter: blur(10px);
+  pointer-events: auto;
+}
+
+.action-button.active:hover {
+  background: rgba(212, 175, 55, 0.3);
+  border-color: rgba(212, 175, 55, 0.8);
+  transform: translateX(-50%) scale(1.1);
+}
+
+.action-button.active {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.action-button.inactive {
+  opacity: 0;
+  transform: translateX(-50%) translateY(20px);
+  pointer-events: none;
+}
+
+.action-button-icon {
+  font-size: 1.5rem;
+  color: rgba(212, 175, 55, 1);
+  margin: 0;
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  .face-title {
+    font-size: 1.75rem;
+    bottom: 100px;
+  }
+
+  .face-description {
+    font-size: 1rem;
+    bottom: 60px;
+  }
+
+  .action-button {
+    width: 50px;
+    height: 50px;
+    bottom: 15px;
+  }
+
+  .action-button-icon {
+    font-size: 1.25rem;
+  }
+}
+
