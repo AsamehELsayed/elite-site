@@ -787,7 +787,7 @@ class InfiniteGridMenu {
     gl.enable(gl.CULL_FACE);
     gl.enable(gl.DEPTH_TEST);
 
-    gl.clearColor(0, 0, 0, 0);
+    gl.clearColor(0.07, 0.07, 0.09, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.uniformMatrix4fv(this.discLocations.uWorldMatrix, false, this.worldMatrix);
@@ -953,8 +953,31 @@ export default function InfiniteMenu({ items = [] }) {
   };
 
   return (
-    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'block' }}>
-      <canvas id="infinite-grid-menu-canvas" ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
+    <div
+      data-cursor="interactive"
+      className="infinite-menu-container"
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        display: 'block',
+        overflow: 'hidden'
+      }}
+    >
+      {/* Animated background layers */}
+      <div className="infinite-menu-bg-layer infinite-menu-bg-1"></div>
+      <div className="infinite-menu-bg-layer infinite-menu-bg-2"></div>
+      <div className="infinite-menu-bg-layer infinite-menu-bg-3"></div>
+      <div className="infinite-menu-grid-overlay"></div>
+      
+      <canvas
+        id="infinite-grid-menu-canvas"
+        ref={canvasRef}
+        data-cursor="interactive"
+        style={{ width: '100%', height: '100%', display: 'block', position: 'relative', zIndex: 1 }}
+      />
 
       {activeItem && (
         <>

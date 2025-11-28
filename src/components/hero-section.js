@@ -7,6 +7,7 @@ import { useRef } from "react"
 import TextPressure from "./TextPressure"
 import ScrollStack, { ScrollStackItem } from "./ScrollStack"
 import LiquidEther from "./LiquidEther"
+import { LaserFlow } from "@/components/leserflow"
 
 export function HeroSection() {
     const ref = useRef(null)
@@ -20,9 +21,26 @@ export function HeroSection() {
     const scale = useTransform(scrollYProgress, [0, 1], [1, 1.2])
 
     return (
-        <section ref={ref} id="home" className="relative w-full h-screen flex items-center justify-center overflow-hidden">
-            {/* Background LiquidEther Effect */}
+        <section ref={ref} id="home" className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-black">
+            {/* Video Background */}
             <div className="absolute inset-0 z-0">
+                <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                >
+                    <source src="/hero-video.mp4" type="video/mp4" />
+                    <source src="/hero-video.webm" type="video/webm" />
+                    {/* Fallback if video doesn't load */}
+                </video>
+                {/* Dark overlay for better text readability */}
+                <div className="absolute inset-0 bg-black/40"></div>
+            </div>
+
+            {/* Background LiquidEther Effect */}
+            <div className="absolute inset-0 z-[1]">
                 <LiquidEther
                     colors={['#FFD700']}
                     mouseForce={10}
@@ -40,14 +58,9 @@ export function HeroSection() {
                     autoRampDuration={0.6}
                 />
             </div>
-
-            {/* Background Blur Elements */}
-            <div className="absolute top-20 right-20 w-96 h-96 bg-primary/20 rounded-full blur-[120px] animate-float-slow z-10"></div>
-            <div className="absolute bottom-20 left-20 w-80 h-80 bg-white/10 rounded-full blur-[100px] animate-float z-10" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 animate-morph blur-[150px] z-10"></div>
-
+        
             {/* Content */}
-            <div className="container mx-auto px-4 md:px-6 relative z-20 text-center">
+            <div className="container mx-auto px-4 md:px-6 relative z-[3] text-center">
                 <motion.div
                     initial={{ opacity: 0, y: 100 }}
                     whileInView={{ opacity: 1, y: 0 }}

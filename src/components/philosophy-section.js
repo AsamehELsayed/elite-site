@@ -3,6 +3,8 @@
 import { motion, useScroll, useTransform } from "framer-motion"
 import { useRef } from "react"
 import ClickSpark from "./ClickSpark"
+import LiquidEther from "./LiquidEther"
+import { LaserFlow } from "@/components/leserflow"
 
 export function PhilosophySection() {
   const ref = useRef(null)
@@ -17,8 +19,28 @@ export function PhilosophySection() {
   const y = useTransform(scrollYProgress, [0, 1], [0, -50])
 
   return (
-    <section ref={ref} className="w-full h-screen flex items-center justify-center bg-zinc-950 relative overflow-hidden">
+    <section ref={ref} id="philosophy" className="w-full h-screen flex items-center justify-center bg-black relative overflow-hidden">
+      {/* Enhanced gradient overlay */}
+      <div className="absolute inset-0 gradient-mesh opacity-50 z-0 pointer-events-none"></div>
       {/* Enhanced background effects */}
+      <div className="absolute inset-0 z-0">
+                <LiquidEther
+                    colors={['#FFD700']}
+                    mouseForce={10}
+                    cursorSize={100}
+                    isViscous={false}
+                    viscous={30}
+                    iterationsViscous={32}
+                    iterationsPoisson={32}
+                    resolution={0.5}
+                    isBounce={false}
+                    autoSpeed={0.5}
+                    autoIntensity={2.2}
+                    takeoverDuration={0.25}
+                    autoResumeDelay={3000}
+                    autoRampDuration={0.6}
+                />
+            </div>
       <ClickSpark
   sparkColor='#fff'
   sparkSize={10}
@@ -27,11 +49,11 @@ export function PhilosophySection() {
   duration={400}
 >
       <motion.div 
-        className="absolute top-0 right-0 w-[60vw] h-[60vw] bg-gradient-to-br from-primary/10 via-primary/5 to-transparent blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none rounded-full"
+        className="absolute top-0 right-0 w-[60vw] h-[60vw] bg-linear-to-br from-primary/8 via-primary/4 to-transparent blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none rounded-full"
         style={{ rotateX, scale }}
         animate={{
           scale: [1, 1.1, 1],
-          opacity: [0.3, 0.5, 0.3],
+          opacity: [0.25, 0.4, 0.25],
         }}
         transition={{
           duration: 8,
@@ -40,7 +62,7 @@ export function PhilosophySection() {
         }}
       />
       <motion.div 
-        className="absolute bottom-0 left-0 w-[40vw] h-[40vw] bg-gradient-to-tr from-primary/15 to-transparent rounded-full blur-[140px]"
+        className="absolute bottom-0 left-0 w-[40vw] h-[40vw] bg-linear-to-tr from-primary/12 to-transparent rounded-full blur-[120px]"
         style={{ y }}
         animate={{
           x: [0, 20, 0],
@@ -52,7 +74,7 @@ export function PhilosophySection() {
           ease: "easeInOut"
         }}
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/50 to-zinc-950 pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-b from-transparent via-black/40 to-black pointer-events-none z-0" />
       
       {/* Subtle grid pattern overlay */}
       <div className="absolute inset-0 opacity-[0.02] pointer-events-none" 
@@ -62,6 +84,28 @@ export function PhilosophySection() {
           backgroundSize: '50px 50px'
         }}
       />
+
+      {/* Mirrored hero video panel */}
+      <div className="absolute inset-0 w-full left-0 right-0 top-0 flex items-start justify-center pointer-events-none z-2">
+        <div className="relative w-full">
+          <div className="relative h-64 md:h-80 lg:h-[26rem] w-full">
+            <div className="absolute inset-0 overflow-hidden opacity-80 w-full">
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                aria-hidden="true"
+                className="w-full h-full object-cover scale-y-[-1] blur-sm"
+              >
+                <source src="/hero-video.mp4" type="video/mp4" />
+                <source src="/hero-video.webm" type="video/webm" />
+              </video>
+              <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/70 to-black" />
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10 py-20 md:py-32">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
@@ -80,7 +124,7 @@ export function PhilosophySection() {
               whileInView={{ scaleX: 1 }}
               transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
               viewport={{ once: false }}
-              className="absolute -left-8 top-0 bottom-0 w-[2px] bg-gradient-to-b from-primary via-primary/50 to-transparent origin-top"
+              className="absolute -left-8 top-0 bottom-0 w-[2px] bg-linear-to-b from-primary via-primary/50 to-transparent origin-top"
             />
             
             <h2 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-bold text-white leading-[1.1] mb-6 md:mb-10">
@@ -93,7 +137,7 @@ export function PhilosophySection() {
               >
                 <span className="relative z-10">Optimal</span>
                 <motion.span
-                  className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/5 to-transparent blur-xl"
+                  className="absolute inset-0 bg-linear-to-r from-primary/20 via-primary/5 to-transparent blur-xl"
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   transition={{ duration: 1, delay: 0.5 }}
@@ -146,14 +190,17 @@ export function PhilosophySection() {
               className="relative"
             >
               <motion.p 
-                className="text-xl md:text-2xl lg:text-3xl text-zinc-200 font-light leading-relaxed md:leading-loose"
+                className="text-xl md:text-2xl lg:text-3xl text-zinc-100 font-light leading-relaxed md:leading-loose"
                 initial={{ opacity: 0, filter: "blur(10px)", y: 30 }}
                 whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
                 transition={{ duration: 1, delay: 0.5 }}
                 viewport={{ once: false }}
               >
                 We believe that true luxury lies in the seamless integration of form and function. Our philosophy is rooted in the understanding that{" "}
-                <span className="text-primary/80 font-normal">every pixel serves a purpose</span>.
+                <span className="text-primary font-medium relative inline-block group">
+                  <span className="relative z-10">every pixel serves a purpose</span>
+                  <span className="absolute inset-0 bg-primary/10 blur-xl z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                </span>.
               </motion.p>
             </motion.div>
             
@@ -164,7 +211,7 @@ export function PhilosophySection() {
               viewport={{ once: false }}
             >
               <motion.p 
-                className="text-lg md:text-xl text-zinc-400 leading-relaxed md:leading-loose"
+                className="text-lg md:text-xl text-zinc-300 leading-relaxed md:leading-loose"
                 initial={{ opacity: 0, filter: "blur(10px)", y: 30 }}
                 whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
                 transition={{ duration: 1, delay: 0.8 }}
@@ -184,14 +231,14 @@ export function PhilosophySection() {
             >
               {/* Gradient divider */}
               <motion.div 
-                className="h-[1px] w-full mb-10 md:mb-12 relative overflow-hidden"
+                className="h-px w-full mb-10 md:mb-12 relative overflow-hidden"
                 initial={{ scaleX: 0 }}
                 whileInView={{ scaleX: 1 }}
                 transition={{ duration: 1.2, delay: 1, ease: "easeOut" }}
                 viewport={{ once: false }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
-                <div className="absolute inset-0 bg-zinc-800/50" />
+                <div className="absolute inset-0 bg-linear-to-r from-transparent via-primary/60 to-transparent" />
+                <div className="absolute inset-0 bg-zinc-700/30" />
               </motion.div>
               
               {/* Labels with enhanced styling */}
@@ -219,7 +266,7 @@ export function PhilosophySection() {
                     >
                       {item.label}
                       <motion.span
-                        className="absolute -bottom-1 left-0 h-[1px] bg-gradient-to-r from-primary to-transparent"
+                        className="absolute -bottom-1 left-0 h-px bg-linear-to-r from-primary to-transparent"
                         initial={{ width: 0 }}
                         whileHover={{ width: "100%" }}
                         transition={{ duration: 0.3 }}

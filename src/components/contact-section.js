@@ -1,134 +1,166 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { useMemo, useState } from "react"
+
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Send } from 'lucide-react'
+import { LaserFlow } from "@/components/leserflow"
+import LiquidEther from "./LiquidEther"
+
+const bookingWeek = [
+  { day: "Mon", date: "May 05", slots: ["09:00", "11:30", "15:00"] },
+  { day: "Tue", date: "May 06", slots: ["10:00", "13:30", "17:00"] },
+  { day: "Wed", date: "May 07", slots: ["08:30", "12:00", "16:30"] },
+  { day: "Thu", date: "May 08", slots: ["09:30", "14:00"] },
+  { day: "Fri", date: "May 09", slots: ["10:30", "13:00", "18:00"] },
+]
+
+const briefingSteps = [
+  { title: "Discovery", detail: "Clarify goals, constraints & timing." },
+  { title: "Strategy sprint", detail: "Design the activation blueprint." },
+  { title: "Green light", detail: "Lock scope, squad, and success metrics." },
+]
 
 export function ContactSection() {
-  return (
-    <section className="w-full h-screen flex items-center bg-primary relative overflow-hidden">
-      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-      <div className="absolute top-20 left-20 w-96 h-96 bg-black/20 rounded-full blur-[120px] animate-float"></div>
-      <div className="absolute bottom-20 right-20 w-80 h-80 bg-white/10 rounded-full blur-[100px] animate-float-slow"></div>
-      
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          <motion.div
-            initial={{ opacity: 0, x: -100 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1, type: "spring", bounce: 0.3 }}
-            viewport={{ once: false }}
-          >
-            <h2 className="text-5xl md:text-7xl font-serif font-bold text-black mb-6 leading-tight">
-              {["Let's Create", "Something", "Extraordinary."].map((line, lineIndex) => (
-                <motion.span
-                  key={lineIndex}
-                  className="block"
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: lineIndex * 0.2 }}
-                  viewport={{ once: false }}
-                >
-                  {line}
-                </motion.span>
-              ))}
-            </h2>
-            
-            <motion.p 
-              className="text-black/70 text-xl max-w-md leading-relaxed mb-8"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              viewport={{ once: false }}
-            >
-              Ready to elevate your brand? We are currently accepting new projects for Q4 2025.
-            </motion.p>
-            
-            <motion.div 
-              className="space-y-2"
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.8 }}
-              viewport={{ once: false }}
-            >
-              <motion.p 
-                className="text-black font-medium"
-                whileHover={{ x: 10, color: "#1a1a1a" }}
-              >
-                hello@eliteagency.com
-              </motion.p>
-              <motion.p 
-                className="text-black font-medium"
-                whileHover={{ x: 10, color: "#1a1a1a" }}
-              >
-                +1 (555) 000-0000
-              </motion.p>
-            </motion.div>
-          </motion.div>
+  const [selectedDayIndex, setSelectedDayIndex] = useState(0)
+  const [selectedSlot, setSelectedSlot] = useState(bookingWeek[0].slots[0])
 
-          <motion.form
-            initial={{ opacity: 0, x: 100, rotateY: -15 }}
-            whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
-            transition={{ duration: 1, delay: 0.3, type: "spring" }}
-            viewport={{ once: false }}
-            className="space-y-6 bg-white/10 backdrop-blur-md p-8 md:p-12 rounded-2xl border border-black/5 shadow-2xl"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <motion.div 
-                className="space-y-2"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-                viewport={{ once: false }}
-              >
-                <label className="text-sm font-medium text-black uppercase tracking-wider">Name</label>
-                <Input className="bg-transparent border-black/20 focus:border-black text-black placeholder:text-black/40 rounded-none border-0 border-b h-12 px-0 transition-all duration-300 focus:scale-105" placeholder="John Doe" />
-              </motion.div>
-              <motion.div 
-                className="space-y-2"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.6 }}
-                viewport={{ once: false }}
-              >
-                <label className="text-sm font-medium text-black uppercase tracking-wider">Email</label>
-                <Input className="bg-transparent border-black/20 focus:border-black text-black placeholder:text-black/40 rounded-none border-0 border-b h-12 px-0 transition-all duration-300 focus:scale-105" placeholder="john@example.com" />
-              </motion.div>
+  const selectedDay = useMemo(() => bookingWeek[selectedDayIndex], [selectedDayIndex])
+
+  return (
+    <section className="relative isolate min-h-screen overflow-hidden w-full bg-[oklch(0.12_0_0)] py-24 text-white">
+          <div className="absolute inset-0 z-0">
+                <LiquidEther
+                    colors={['#FFD700']}
+                    mouseForce={10}
+                    cursorSize={100}
+                    isViscous={false}
+                    viscous={30}
+                    iterationsViscous={32}
+                    iterationsPoisson={32}
+                    resolution={0.5}
+                    isBounce={false}
+                    autoSpeed={0.5}
+                    autoIntensity={2.2}
+                    takeoverDuration={0.25}
+                    autoResumeDelay={3000}
+                    autoRampDuration={0.6}
+                />
             </div>
-            <motion.div 
-              className="space-y-2"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.7 }}
-              viewport={{ once: false }}
-            >
-              <label className="text-sm font-medium text-black uppercase tracking-wider">Message</label>
-              <Textarea className="bg-transparent border-black/20 focus:border-black text-black placeholder:text-black/40 rounded-none border-0 border-b min-h-[100px] px-0 resize-none transition-all duration-300 focus:scale-105" placeholder="Tell us about your project..." />
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.8 }}
-              viewport={{ once: false }}
-            >
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button className="w-full bg-black text-white hover:bg-black/80 h-14 text-lg rounded-none mt-4 group relative overflow-hidden">
-                  <motion.span
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                    initial={{ x: "-100%" }}
-                    whileHover={{ x: "100%" }}
-                    transition={{ duration: 0.6 }}
-                  ></motion.span>
-                  <span className="flex items-center justify-center gap-2">
-                    Send Message
-                    <Send className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                  </span>
-                </Button>
-              </motion.div>
-            </motion.div>
-          </motion.form>
+      <div className="pointer-events-none absolute inset-0">
+        <LaserFlow
+          color="#D4AF37"
+          horizontalBeamOffset={0.3}
+          verticalBeamOffset={-0.3}
+          verticalSizing={1.4}
+          horizontalSizing={0.5}
+          wispIntensity={4}
+          fogIntensity={0.2}
+          className="opacity-60 mix-blend-screen"
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(212,175,55,0.12),transparent_55%)]"></div>
+        <div className="absolute inset-0 bg-linear-to-b from-[oklch(0.12_0_0)]/15 via-transparent to-[oklch(0.12_0_0)]/50"></div>
+      </div>
+      <div className="container mx-auto relative z-10 grid gap-12 px-4 md:px-6 lg:grid-cols-2">
+        <div className="space-y-10">
+          <div className="space-y-4">
+            <p className="text-xs uppercase tracking-[0.4em] text-white/60">Studio sessions</p>
+            <h2 className="text-4xl font-serif leading-tight text-white sm:text-5xl">
+              Reserve a calendar slot with our leadership team
+            </h2>
+            <p className="max-w-xl text-base text-white/70">
+              Choose a window that suits your cadence and we&apos;ll come ready with a tailored agenda. Expect a focused
+              45-minute working session—not a sales call.
+            </p>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            {briefingSteps.map((step, index) => (
+              <div key={step.title} className="rounded-2xl border border-white/15 bg-white/8 backdrop-blur-sm p-5 hover:bg-white/10 transition-all duration-300 hover:border-primary/30">
+                <p className="text-[10px] uppercase tracking-[0.5em] text-primary/70">{`Step 0${index + 1}`}</p>
+                <p className="mt-2 text-lg font-serif text-white">{step.title}</p>
+                <p className="text-sm text-white/70">{step.detail}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-2xl border border-white/15 bg-white/8 backdrop-blur-sm p-5 hover:bg-white/10 transition-all duration-300">
+            <p className="text-xs uppercase tracking-[0.35em] text-primary/70">Session focus</p>
+            <ul className="mt-3 space-y-2 text-sm text-white/80">
+              <li>• Align on launch objectives, runways, and desired KPIs.</li>
+              <li>• Review available squads, budget bands, and timelines.</li>
+              <li>• Leave with a clear decision memo and next steps.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="space-y-6 rounded-3xl border border-white/15 bg-white/8 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.3)] backdrop-blur-xl hover:bg-white/10 transition-all duration-300">
+          <div className="flex flex-col gap-1">
+            <p className="text-xs uppercase tracking-[0.35em] text-white/60">Calendar</p>
+            <p className="text-sm text-white/70">All times shown in EST · 45-minute sessions</p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+            {bookingWeek.map((day, index) => {
+              const isActive = index === selectedDayIndex
+              return (
+                <button
+                  key={day.date}
+                  type="button"
+                  onClick={() => {
+                    setSelectedDayIndex(index)
+                    setSelectedSlot(day.slots[0])
+                  }}
+                  className={`rounded-2xl border px-3 py-3 text-left transition-all duration-300 ${
+                    isActive
+                      ? "border-primary bg-primary text-black shadow-lg shadow-primary/30"
+                      : "border-white/20 bg-white/8 text-white hover:border-primary/50 hover:bg-white/12"
+                  }`}
+                >
+                  <p className="text-xs uppercase tracking-[0.4em]">{day.day}</p>
+                  <p className="text-lg font-serif">{day.date}</p>
+                </button>
+              )
+            })}
+          </div>
+
+          <div>
+            <p className="text-xs uppercase tracking-[0.35em] text-white/60">Available slots</p>
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              {selectedDay.slots.map((slot) => {
+                const isSelected = slot === selectedSlot
+                return (
+                  <button
+                    key={slot}
+                    type="button"
+                    onClick={() => setSelectedSlot(slot)}
+                    className={`rounded-2xl border px-4 py-3 text-base font-semibold transition-all duration-300 ${
+                      isSelected
+                        ? "border-primary bg-primary text-black shadow-lg shadow-primary/30"
+                        : "border-white/25 bg-white/8 text-white hover:border-primary/50 hover:bg-white/12"
+                    }`}
+                  >
+                    {slot}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-primary/30 bg-primary/10 backdrop-blur-sm p-4 text-sm text-white/80">
+            <p className="text-xs uppercase tracking-[0.35em] text-primary/80">Selected</p>
+            <p className="text-lg font-serif text-white">
+              {selectedDay.day} · {selectedDay.date} · {selectedSlot} EST
+            </p>
+            <p>We&apos;ll send a calendar invite with a secure video room.</p>
+          </div>
+
+          <Button type="button" className="w-full rounded-2xl bg-primary py-4 text-lg font-semibold text-black hover:bg-primary/90 shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all duration-300">
+            Confirm appointment
+          </Button>
+
+          <p className="text-xs text-white/60">
+            If none of these windows work, email studio@elite.com and we&apos;ll coordinate manually.
+          </p>
         </div>
       </div>
     </section>

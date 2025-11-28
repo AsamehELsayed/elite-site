@@ -1,17 +1,22 @@
+
+
 import { SiteHeader } from "@/components/site-header"
 import { HeroSection } from "@/components/hero-section"
 import { ServicesSection } from "@/components/services-section"
 import { PhilosophySection } from "@/components/philosophy-section"
 import { CaseStudiesSection } from "@/components/case-studies-section"
 import { TestimonialsSection } from "@/components/testimonials-section"
+import { VisualsSection } from "@/components/visuals-section"
 import { ContactSection } from "@/components/contact-section"
 import { SiteFooter } from "@/components/site-footer"
+import { NavigationStepper } from "@/components/navigation-stepper"
 
 export default function Home() {
   return (
     
     <main className="bg-black text-white selection:bg-primary selection:text-black h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth no-scrollbar fixed inset-0">
       <SiteHeader />
+      <NavigationStepper />
       <div className="snap-section">
         <HeroSection />
       </div>
@@ -26,6 +31,9 @@ export default function Home() {
       </div>
       <div className="snap-section">
         <TestimonialsSection />
+      </div>
+      <div className="snap-section">
+        <VisualsSection />
       </div>
       <div className="snap-section">
         <ContactSection />

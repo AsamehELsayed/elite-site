@@ -3,6 +3,8 @@
 import { motion } from "framer-motion"
 import { useRef } from "react"
 import InfiniteMenu from "./InfiniteMenu"
+import LiquidEther from "./LiquidEther"
+import { LaserFlow } from "@/components/leserflow"
 
 const cases = [
   {
@@ -43,8 +45,14 @@ export function CaseStudiesSection() {
   const containerRef = useRef(null)
 
   return (
-    <section ref={containerRef} className="w-full h-screen bg-zinc-950 overflow-hidden relative">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none z-0"></div>
+    <section
+      ref={containerRef}
+      id="work"
+      className="w-full h-screen bg-zinc-900/90 backdrop-blur-md overflow-hidden relative"
+    >
+      <div className="absolute inset-0 gradient-mesh opacity-40 pointer-events-none z-0"></div>
+      <div className="absolute inset-0 bg-linear-to-br from-primary/15 via-transparent to-transparent pointer-events-none z-0"></div>
+      <div className="absolute inset-0 bg-linear-to-t from-white/5 via-transparent to-transparent pointer-events-none z-0"></div>
       
       <div className="absolute top-0 left-0 w-full px-4 md:px-6 pt-8 md:pt-12 z-20">
         <motion.div
@@ -54,7 +62,7 @@ export function CaseStudiesSection() {
           viewport={{ once: false }}
           className="w-full"
         >
-          <h2 className="text-4xl md:text-6xl font-serif text-white relative inline-block">
+          <h2 className="text-4xl md:text-6xl font-serif text-white relative inline-block pt-10">
             Selected Works
             <motion.div
               className="absolute bottom-0 left-0 h-[2px] bg-primary"
