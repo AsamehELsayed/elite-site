@@ -19,9 +19,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${geist.variable} ${geistMono.variable} ${playfair.variable} font-sans antialiased bg-[oklch(0.30_0_0)] text-white selection:bg-primary selection:text-black`}>
-        <CursorFollower />
+      <body className={`${geist.variable} ${geistMono.variable} ${playfair.variable} font-sans antialiased bg-black text-white selection:bg-primary selection:text-black`}>
         {children}
+        <CursorFollower />
         {/* <Analytics /> */}
       </body>
     </html>

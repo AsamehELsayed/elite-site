@@ -5,6 +5,7 @@ import { useRef } from "react"
 import InfiniteMenu from "./InfiniteMenu"
 import LiquidEther from "./LiquidEther"
 import { LaserFlow } from "@/components/leserflow"
+import Galaxy from "./star"
 
 const cases = [
   {
@@ -53,6 +54,21 @@ export function CaseStudiesSection() {
       <div className="absolute inset-0 gradient-mesh opacity-40 pointer-events-none z-0"></div>
       <div className="absolute inset-0 bg-linear-to-br from-primary/15 via-transparent to-transparent pointer-events-none z-0"></div>
       <div className="absolute inset-0 bg-linear-to-t from-white/5 via-transparent to-transparent pointer-events-none z-0"></div>
+      {/* Galaxy component */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute bottom-0 left-0 right-0 h-1/2 z-0">
+          <Galaxy
+            mouseRepulsion={false}
+            mouseInteraction={false}
+            density={3}
+            glowIntensity={0.5}
+            saturation={0.1}
+            hueShift={1}
+          />
+          {/* Gradient fade from opaque at top (hiding) to transparent at bottom (showing) */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black via-black/50 to-transparent pointer-events-none z-10 opacity-50" />
+        </div>
+      </div>
       
       <div className="absolute top-0 left-0 w-full px-4 md:px-6 pt-8 md:pt-12 z-20">
         <motion.div

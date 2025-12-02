@@ -12,6 +12,7 @@ import {
 import { Orbit, Quote } from "lucide-react"
 import LiquidEther from "./LiquidEther"
 import { LaserFlow } from "@/components/leserflow"
+import Galaxy from "./star"
 
 const testimonials = [
   {
@@ -129,7 +130,7 @@ export function TestimonialsSection() {
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 z-0">
           <LiquidEther
-            colors={['#FFD700']}
+            colors={['#EDC9Af']}
             mouseForce={10}
             cursorSize={100}
             isViscous={false}
@@ -172,7 +173,29 @@ export function TestimonialsSection() {
           transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
         />
         <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-size-[160px_160px] opacity-15" />
-        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.05]" />
+        {/* Subtle noise texture using CSS - removed external image dependency */}
+        <div 
+          className="absolute inset-0 opacity-[0.05]"
+          style={{
+            backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)',
+            backgroundSize: '20px 20px'
+          }}
+        />
+        {/* Galaxy component */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute bottom-0 left-0 right-0 h-1/2 z-0">
+            <Galaxy
+              mouseRepulsion={false}
+              mouseInteraction={false}
+              density={3}
+              glowIntensity={0.5}
+              saturation={0.1}
+              hueShift={1}
+            />
+            {/* Gradient fade from opaque at top (hiding) to transparent at bottom (showing) */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black via-black/50 to-transparent pointer-events-none z-10 opacity-50" />
+          </div>
+        </div>
       </div>
 
       <div className="relative z-10 h-full w-full ">

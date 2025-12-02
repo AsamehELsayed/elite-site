@@ -5,6 +5,7 @@ import { useRef } from "react"
 import ClickSpark from "./ClickSpark"
 import LiquidEther from "./LiquidEther"
 import { LaserFlow } from "@/components/leserflow"
+import Galaxy from "./star"
 
 export function PhilosophySection() {
   const ref = useRef(null)
@@ -24,23 +25,19 @@ export function PhilosophySection() {
       <div className="absolute inset-0 gradient-mesh opacity-50 z-0 pointer-events-none"></div>
       {/* Enhanced background effects */}
       <div className="absolute inset-0 z-0">
-                <LiquidEther
-                    colors={['#FFD700']}
-                    mouseForce={10}
-                    cursorSize={100}
-                    isViscous={false}
-                    viscous={30}
-                    iterationsViscous={32}
-                    iterationsPoisson={32}
-                    resolution={0.5}
-                    isBounce={false}
-                    autoSpeed={0.5}
-                    autoIntensity={2.2}
-                    takeoverDuration={0.25}
-                    autoResumeDelay={3000}
-                    autoRampDuration={0.6}
-                />
-            </div>
+        <div className="absolute bottom-0 left-0 right-0 h-1/2 z-0 ">
+          <Galaxy
+            mouseRepulsion={false}
+            mouseInteraction={false}
+            density={3}
+            glowIntensity={0.5}
+            saturation={0.1}
+            hueShift={1}
+          />
+          {/* Gradient fade from opaque at top (hiding) to transparent at bottom (showing) */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black via-black/50 to-transparent pointer-events-none z-10 opacity-50" />
+        </div>
+      </div>
       <ClickSpark
   sparkColor='#fff'
   sparkSize={10}

@@ -5,6 +5,7 @@ import { useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { LaserFlow } from "@/components/leserflow"
 import LiquidEther from "./LiquidEther"
+import Galaxy from "./star"
 
 const bookingWeek = [
   { day: "Mon", date: "May 05", slots: ["09:00", "11:30", "15:00"] },
@@ -30,7 +31,7 @@ export function ContactSection() {
     <section className="relative isolate min-h-screen overflow-hidden w-full bg-[oklch(0.12_0_0)] py-24 text-white">
           <div className="absolute inset-0 z-0">
                 <LiquidEther
-                    colors={['#FFD700']}
+                    colors={['#EDC9Af']}
                     mouseForce={10}
                     cursorSize={100}
                     isViscous={false}
@@ -59,6 +60,21 @@ export function ContactSection() {
         />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(212,175,55,0.12),transparent_55%)]"></div>
         <div className="absolute inset-0 bg-linear-to-b from-[oklch(0.12_0_0)]/15 via-transparent to-[oklch(0.12_0_0)]/50"></div>
+        {/* Galaxy component */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute bottom-0 left-0 right-0 h-1/2 z-0">
+            <Galaxy
+              mouseRepulsion={false}
+              mouseInteraction={false}
+              density={3}
+              glowIntensity={0.5}
+              saturation={0.1}
+              hueShift={1}
+            />
+            {/* Gradient fade from opaque at top (hiding) to transparent at bottom (showing) */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black via-black/50 to-transparent pointer-events-none z-10 opacity-50" />
+          </div>
+        </div>
       </div>
       <div className="container mx-auto relative z-10 grid gap-12 px-4 md:px-6 lg:grid-cols-2">
         <div className="space-y-10">

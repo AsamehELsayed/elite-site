@@ -6,9 +6,9 @@ import { motion, AnimatePresence } from "framer-motion"
 const sections = [
   { id: "home", label: "Home" },
   { id: "philosophy", label: "Philosophy" },
+  { id: "visuals", label: "Visuals" },
   { id: "work", label: "Work" },
   { id: "testimonials", label: "Testimonials" },
-  { id: "visuals", label: "Visuals" },
   { id: "contact", label: "Contact" },
 ]
 
@@ -114,9 +114,14 @@ export function NavigationStepper() {
     // Get scroll container
     const scrollContainer = document.querySelector('main') || window
     
-    // Scroll handler
+    // Throttled scroll handler for better performance
+    let scrollTimeout = null
     const handleScroll = () => {
-      updateActiveSection()
+      if (scrollTimeout) return
+      scrollTimeout = requestAnimationFrame(() => {
+        updateActiveSection()
+        scrollTimeout = null
+      })
     }
     
     // Add event listeners
@@ -131,8 +136,8 @@ export function NavigationStepper() {
       scrollContainer.addEventListener("scrollend", handleScrollEnd, { passive: true })
     }
     
-    // Periodic check as fallback
-    const interval = setInterval(updateActiveSection, 250)
+    // Periodic check as fallback - reduced frequency for better performance
+    const interval = setInterval(updateActiveSection, 500)
     
     // Cleanup
     return () => {

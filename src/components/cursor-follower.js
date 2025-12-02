@@ -13,17 +13,32 @@ export function CursorFollower() {
   const targetRef = useRef({ x: -100, y: -100 })
   const currentRef = useRef({ x: -100, y: -100 })
   const smoothingRef = useRef(0.8)
+  const scaleRef = useRef(1)
 
   useEffect(() => {
     const cursor = cursorRef.current
     if (!cursor) return
 
+    // Use transform instead of CSS variables for better performance
     const smoothFollow = () => {
-      currentRef.current.x += (targetRef.current.x - currentRef.current.x) * smoothingRef.current
-      currentRef.current.y += (targetRef.current.y - currentRef.current.y) * smoothingRef.current
-      cursor.style.setProperty('--cursor-x', `${currentRef.current.x}px`)
-      cursor.style.setProperty('--cursor-y', `${currentRef.current.y}px`)
-      rafRef.current = requestAnimationFrame(smoothFollow)
+      if (!cursor) return
+      
+      try {
+        currentRef.current.x += (targetRef.current.x - currentRef.current.x) * smoothingRef.current
+        currentRef.current.y += (targetRef.current.y - currentRef.current.y) * smoothingRef.current
+        
+        // Get scale from computed style
+        const computedStyle = getComputedStyle(cursor)
+        const scaleValue = computedStyle.getPropertyValue('--cursor-scale')?.trim() || '1'
+        scaleRef.current = parseFloat(scaleValue) || 1
+        
+        // Use transform3d for GPU acceleration - center the cursor (28px / 2 = 14px)
+        cursor.style.transform = `translate3d(${currentRef.current.x - 14}px, ${currentRef.current.y - 14}px, 0) scale(${scaleRef.current})`
+        
+        rafRef.current = requestAnimationFrame(smoothFollow)
+      } catch (error) {
+        console.error('Cursor follower error:', error)
+      }
     }
 
     rafRef.current = requestAnimationFrame(smoothFollow)

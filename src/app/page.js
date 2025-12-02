@@ -6,15 +6,15 @@ import { ServicesSection } from "@/components/services-section"
 import { PhilosophySection } from "@/components/philosophy-section"
 import { CaseStudiesSection } from "@/components/case-studies-section"
 import { TestimonialsSection } from "@/components/testimonials-section"
-import { VisualsSection } from "@/components/visuals-section"
 import { ContactSection } from "@/components/contact-section"
 import { SiteFooter } from "@/components/site-footer"
 import { NavigationStepper } from "@/components/navigation-stepper"
+import VisualSection from "@/components/visual-section"
 
 export default function Home() {
   return (
     
-    <main className="bg-black text-white selection:bg-primary selection:text-black h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth no-scrollbar fixed inset-0">
+    <main className="bg-black text-white selection:bg-primary selection:text-black h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth no-scrollbar fixed inset-0" style={{ willChange: 'scroll-position' }}>
       <SiteHeader />
       <NavigationStepper />
       <div className="snap-section">
@@ -26,14 +26,14 @@ export default function Home() {
       {/* <div className="snap-section">
         <ServicesSection />
       </div> */}
+      <div className="no-snap-section">
+        <VisualSection />
+      </div>
       <div className="snap-section">
         <CaseStudiesSection />
       </div>
       <div className="snap-section">
         <TestimonialsSection />
-      </div>
-      <div className="snap-section">
-        <VisualsSection />
       </div>
       <div className="snap-section">
         <ContactSection />

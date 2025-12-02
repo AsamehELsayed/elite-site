@@ -123,15 +123,31 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-    /* Body should not have overflow if main handles scrolling */
-    overflow: hidden;
-  }
   
   html {
-    /* Ensure smooth scrolling */
     scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    background-color: #000000;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    overflow: hidden;
+    background-color: #000000;
+    color: #ffffff;
+  }
+  
+  /* Ensure main is visible */
+  main {
+    background-color: #000000;
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Ensure sections are visible */
+  section {
+    background-color: #000000;
+    position: relative;
   }
 }
 
@@ -155,11 +171,31 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  /* Performance optimization */
+  contain: layout style paint;
+  transform: translateZ(0);
+  will-change: scroll-position;
 }
 
 .snap-section-start {
   align-items: flex-start;
   justify-content: flex-start;
+}
+
+/* Section without snap scroll - allows free scrolling */
+.no-snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+  width: 100%;
+  position: relative;
+  overflow: visible;
+  min-height: 100vh;
+  display: block;
+  /* Ensure it's part of the scroll flow */
+  scroll-margin: 0;
+  scroll-padding: 0;
+  /* Performance optimization */
+  contain: layout style paint;
 }
 
 /* Custom Utilities for Luxury Feel */
@@ -183,9 +219,9 @@
   box-shadow: 0 0 30px rgba(212, 175, 55, 0.3), 0 0 60px rgba(212, 175, 55, 0.15);
 }
 
-/* Smooth transitions for interactive elements */
-* {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+/* Smooth transitions for interactive elements only - NOT all elements for performance */
+a, button, [role="button"], .transition-all, .hover\:transition-all, input, textarea, select {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
@@ -204,7 +240,7 @@
 }
 
 .gold-gradient-text {
-  background: linear-gradient(to right, #D4AF37, #F2D06B, #FFD700, #F2D06B, #D4AF37);
+  background: linear-gradient(to right, #D4AF37, #F2D06B, #EDC9Af, #F2D06B, #D4AF37);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -259,13 +295,11 @@
 @keyframes slide-in-blur {
   from {
     opacity: 0;
-    transform: translateX(-100px);
-    filter: blur(10px);
+    transform: translate3d(-100px, 0, 0);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
-    filter: blur(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -360,6 +394,9 @@
 .aurora-blur {
   background: radial-gradient(circle, rgba(212, 175, 55, 0.3) 0%, transparent 70%);
   filter: blur(80px);
+  /* Performance: isolate blur to its own layer */
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 @keyframes aurora {
@@ -441,6 +478,9 @@
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  /* Performance: isolate backdrop-filter to its own layer */
+  will-change: backdrop-filter;
+  transform: translateZ(0);
 }
 
 .glass-card-hover {
@@ -533,8 +573,6 @@
 
 .cursor-follower {
   --cursor-size: 28px;
-  --cursor-x: -100px;
-  --cursor-y: -100px;
   --cursor-scale: 1;
   position: fixed;
   top: 0;
@@ -544,15 +582,16 @@
   border: 1px solid rgba(212, 175, 55, 0.85);
   border-radius: 999px;
   pointer-events: none;
-  transform: translate3d(calc(var(--cursor-x) - 50%), calc(var(--cursor-y) - 50%), 0) scale(var(--cursor-scale));
+  transform: translate3d(-100px, -100px, 0) scale(var(--cursor-scale));
+  transform-origin: center center;
+  will-change: transform, width, height, opacity;
   transition:
     width 0.35s ease,
     height 0.35s ease,
     border-radius 0.5s ease,
     border-color 0.35s ease,
     background 0.35s ease,
-    opacity 0.2s ease,
-    transform 0.2s ease;
+    opacity 0.2s ease;
   z-index: 9999;
   background: radial-gradient(circle at 30% 30%, rgba(255, 213, 96, 0.7), transparent 70%),
     radial-gradient(circle at 70% 70%, rgba(212, 175, 55, 0.55), transparent 70%);
@@ -571,7 +610,7 @@
 
 .cursor-follower.is-hidden {
   opacity: 0;
-  transform: translate3d(calc(var(--cursor-x) - 50%), calc(var(--cursor-y) - 50%), 0) scale(0.7);
+  transform: translate3d(-100px, -100px, 0) scale(0.7);
 }
 
 .cursor-follower.is-press {
@@ -601,10 +640,10 @@
 @keyframes cursor-grab-pulse {
   0%,
   100% {
-    transform: translate3d(calc(var(--cursor-x) - 50%), calc(var(--cursor-y) - 50%), 0) scale(1);
+    transform: scale(1);
   }
   50% {
-    transform: translate3d(calc(var(--cursor-x) - 50%), calc(var(--cursor-y) - 50%), 0) scale(1.05);
+    transform: scale(1.05);
   }
 }
 
