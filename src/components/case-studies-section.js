@@ -1,13 +1,11 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useState, useEffect } from "react"
 import InfiniteMenu from "./InfiniteMenu"
-import LiquidEther from "./LiquidEther"
-import { LaserFlow } from "@/components/leserflow"
-import Galaxy from "./star"
 
-const cases = [
+// Default fallback data
+const defaultCases = [
   {
     title: "Lumina Fashion",
     category: "E-Commerce",
@@ -16,77 +14,74 @@ const cases = [
     description: "A modern e-commerce platform revolutionizing the fashion retail experience",
     link: "https://google.com/"
   },
-  {
-    title: "Apex Architecture",
-    category: "Branding",
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop",
-    year: "2024",
-    description: "Brand identity design for a leading architecture firm",
-    link: "https://google.com/"
-  },
-  {
-    title: "Velvet Interiors",
-    category: "Web Design",
-    image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop",
-    year: "2023",
-    description: "Luxury interior design showcase website with immersive 3D experiences",
-    link: "https://google.com/"
-  },
 ]
-
-// Transform cases to InfiniteMenu format
-const menuItems = cases.map(caseItem => ({
-  image: caseItem.image,
-  link: caseItem.link || "#",
-  title: caseItem.title,
-  description: caseItem.description || `${caseItem.category} / ${caseItem.year}`
-}))
 
 export function CaseStudiesSection() {
   const containerRef = useRef(null)
+  const [cases, setCases] = useState(defaultCases)
+
+  // Fetch case studies from API
+  useEffect(() => {
+    const fetchCaseStudies = async () => {
+      try {
+        const response = await fetch('/api/case-studies')
+        if (response.ok) {
+          const data = await response.json()
+          if (Array.isArray(data) && data.length > 0) {
+            setCases(data)
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch case studies:', error)
+      }
+    }
+    
+    fetchCaseStudies()
+  }, [])
+
+  // Transform cases to InfiniteMenu format
+  const menuItems = cases.map(caseItem => ({
+    image: caseItem.image,
+    link: caseItem.link || "#",
+    title: caseItem.title,
+    description: caseItem.description || `${caseItem.category} / ${caseItem.year}`
+  }))
 
   return (
     <section
       ref={containerRef}
       id="work"
-      className="w-full h-screen bg-zinc-900/90 backdrop-blur-md overflow-hidden relative"
+      className="w-full h-screen bg-black overflow-hidden relative"
     >
-      <div className="absolute inset-0 gradient-mesh opacity-40 pointer-events-none z-0"></div>
-      <div className="absolute inset-0 bg-linear-to-br from-primary/15 via-transparent to-transparent pointer-events-none z-0"></div>
-      <div className="absolute inset-0 bg-linear-to-t from-white/5 via-transparent to-transparent pointer-events-none z-0"></div>
-      {/* Galaxy component */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute bottom-0 left-0 right-0 h-1/2 z-0">
-          <Galaxy
-            mouseRepulsion={false}
-            mouseInteraction={false}
-            density={3}
-            glowIntensity={0.5}
-            saturation={0.1}
-            hueShift={1}
-          />
-          {/* Gradient fade from opaque at top (hiding) to transparent at bottom (showing) */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black via-black/50 to-transparent pointer-events-none z-10 opacity-50" />
-        </div>
-      </div>
       
-      <div className="absolute top-0 left-0 w-full px-4 md:px-6 pt-8 md:pt-12 z-20">
+      <div className="absolute top-0 left-0 w-full px-6 md:px-10 pt-10 md:pt-14 z-20">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
+          whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
           viewport={{ once: false }}
           className="w-full"
         >
-          <h2 className="text-4xl md:text-6xl font-serif text-white relative inline-block pt-10">
-            Selected Works
-            <motion.div
-              className="absolute bottom-0 left-0 h-[2px] bg-primary"
-              initial={{ width: 0 }}
-              whileInView={{ width: "100%" }}
-              transition={{ duration: 1, delay: 0.3 }}
+          <div className="flex items-center gap-4 mb-3">
+            <motion.div 
+              className="h-px bg-gradient-to-r from-primary/60 to-transparent w-12"
+              initial={{ width: 0, opacity: 0 }}
+              whileInView={{ width: 48, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
               viewport={{ once: false }}
-            ></motion.div>
+            />
+            <span className="text-primary/60 text-xs uppercase tracking-[0.35em] font-light">Portfolio</span>
+          </div>
+          <h2 className="text-4xl md:text-6xl lg:text-7xl font-serif text-white relative inline-block font-light tracking-wide">
+            Selected
+            <span className="block text-primary/90">Works</span>
+            <motion.div
+              className="absolute -bottom-2 left-0 h-px bg-gradient-to-r from-primary/50 via-primary/20 to-transparent"
+              initial={{ width: 0 }}
+              whileInView={{ width: "120%" }}
+              transition={{ duration: 1.2, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              viewport={{ once: false }}
+            />
           </h2>
         </motion.div>
       </div>

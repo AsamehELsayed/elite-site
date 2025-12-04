@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { testimonialService } from '@/services/testimonialService'
+import { requireAdmin } from '@/lib/auth'
 
+// Public: Guest users can view individual testimonials
 export async function GET(request, { params }) {
   try {
     const { id } = params
@@ -20,7 +22,14 @@ export async function GET(request, { params }) {
   }
 }
 
+// Protected: Only authenticated admin can update testimonials
 export async function PUT(request, { params }) {
+  // Verify authentication
+  const authResult = await requireAdmin(request)
+  if (authResult instanceof NextResponse) {
+    return authResult // Return error response if not authenticated
+  }
+
   try {
     const { id } = params
     const body = await request.json()
@@ -34,7 +43,14 @@ export async function PUT(request, { params }) {
   }
 }
 
+// Protected: Only authenticated admin can delete testimonials
 export async function DELETE(request, { params }) {
+  // Verify authentication
+  const authResult = await requireAdmin(request)
+  if (authResult instanceof NextResponse) {
+    return authResult // Return error response if not authenticated
+  }
+
   try {
     const { id } = params
     await testimonialService.delete(id)

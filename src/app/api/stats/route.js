@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { statService } from '@/services/statService'
+import { requireAdmin } from '@/lib/auth'
 
+// Public: Guest users can view stats
 export async function GET() {
   try {
     const stats = await statService.getAll()
@@ -13,7 +15,14 @@ export async function GET() {
   }
 }
 
+// Protected: Only authenticated admin can create stats
 export async function POST(request) {
+  // Verify authentication
+  const authResult = await requireAdmin(request)
+  if (authResult instanceof NextResponse) {
+    return authResult // Return error response if not authenticated
+  }
+
   try {
     const body = await request.json()
     const stat = await statService.create(body)
@@ -25,6 +34,7 @@ export async function POST(request) {
     )
   }
 }
+
 
 
 

@@ -10,11 +10,13 @@ import {
   Briefcase, 
   BarChart3,
   Calendar,
-  LogOut
+  LogOut,
+  Image as ImageIcon
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { apiPut } from '@/lib/api'
 
 export default function HeroPage() {
   const router = useRouter()
@@ -33,6 +35,7 @@ export default function HeroPage() {
   const menuItems = [
     { icon: Home, label: 'Hero Section', href: '/dashboard/hero' },
     { icon: BookOpen, label: 'Philosophy', href: '/dashboard/philosophy' },
+    { icon: ImageIcon, label: 'Visuals', href: '/dashboard/visuals' },
     { icon: MessageSquare, label: 'Testimonials', href: '/dashboard/testimonials' },
     { icon: Briefcase, label: 'Case Studies', href: '/dashboard/case-studies' },
     { icon: BarChart3, label: 'Stats', href: '/dashboard/stats' },
@@ -79,22 +82,13 @@ export default function HeroPage() {
     e.preventDefault()
     setSaving(true)
     try {
-      const response = await fetch('/api/hero', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to save hero')
-      }
-
-      const data = await response.json()
+      const data = await apiPut('/api/hero', formData)
       setHero(data)
       alert('Hero section updated successfully!')
     } catch (error) {
       console.error('Failed to save hero:', error)
-      alert('Failed to save hero section')
+      const errorMessage = error.message || 'Failed to save hero section'
+      alert(errorMessage)
     } finally {
       setSaving(false)
     }

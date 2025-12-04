@@ -15,6 +15,12 @@ export const statService = {
 
   async create(data) {
     const { label, value, order = 0 } = data
+    
+    // Validate required fields
+    if (!label || !value) {
+      throw new Error('Missing required fields: label and value are required')
+    }
+
     return await prisma.stat.create({
       data: {
         label,
@@ -37,6 +43,7 @@ export const statService = {
     })
   }
 }
+
 
 
 

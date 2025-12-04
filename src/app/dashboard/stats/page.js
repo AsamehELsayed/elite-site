@@ -13,10 +13,12 @@ import {
   Briefcase, 
   BarChart3,
   Calendar,
-  LogOut
+  LogOut,
+  Image as ImageIcon
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api'
 
 export default function StatsPage() {
   const router = useRouter()
@@ -33,6 +35,7 @@ export default function StatsPage() {
   const menuItems = [
     { icon: Home, label: 'Hero Section', href: '/dashboard/hero' },
     { icon: BookOpen, label: 'Philosophy', href: '/dashboard/philosophy' },
+    { icon: ImageIcon, label: 'Visuals', href: '/dashboard/visuals' },
     { icon: MessageSquare, label: 'Testimonials', href: '/dashboard/testimonials' },
     { icon: Briefcase, label: 'Case Studies', href: '/dashboard/case-studies' },
     { icon: BarChart3, label: 'Stats', href: '/dashboard/stats' },
@@ -56,8 +59,7 @@ export default function StatsPage() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/stats')
-      const data = await response.json()
+      const data = await apiGet('/api/stats')
       setStats(data)
     } catch (error) {
       console.error('Failed to fetch stats:', error)
@@ -75,17 +77,9 @@ export default function StatsPage() {
       }
 
       if (editing) {
-        await fetch(`/api/stats/${editing}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })
+        await apiPut(`/api/stats/${editing}`, payload)
       } else {
-        await fetch('/api/stats', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })
+        await apiPost('/api/stats', payload)
       }
 
       setFormData({ label: '', value: '', order: 0 })
@@ -109,7 +103,7 @@ export default function StatsPage() {
   const handleDelete = async (id) => {
     if (!confirm('Are you sure you want to delete this stat?')) return
     try {
-      await fetch(`/api/stats/${id}`, { method: 'DELETE' })
+      await apiDelete(`/api/stats/${id}`)
       fetchStats()
     } catch (error) {
       console.error('Failed to delete stat:', error)

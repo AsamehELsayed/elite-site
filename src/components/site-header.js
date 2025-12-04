@@ -37,7 +37,6 @@ export function SiteHeader() {
 
   const navLinks = [
     { name: "Home", href: "#home" },
-    { name: "About Us", href: "#philosophy" },
     { name: "Services", href: "#services" },
     { name: "Portfolio", href: "#work" },
     { name: "Contact Us", href: "#contact" },

@@ -3,7 +3,6 @@
 import { SiteHeader } from "@/components/site-header"
 import { HeroSection } from "@/components/hero-section"
 import { ServicesSection } from "@/components/services-section"
-import { PhilosophySection } from "@/components/philosophy-section"
 import { CaseStudiesSection } from "@/components/case-studies-section"
 import { TestimonialsSection } from "@/components/testimonials-section"
 import { ContactSection } from "@/components/contact-section"
@@ -20,15 +19,11 @@ export default function Home() {
       <div className="snap-section">
         <HeroSection />
       </div>
-      <div className="snap-section">
-        <PhilosophySection />
-      </div>
       {/* <div className="snap-section">
         <ServicesSection />
       </div> */}
-      <div className="no-snap-section">
-        <VisualSection />
-      </div>
+      {/* Visual section with snap-start to engage scroll, but allows internal free scrolling */}
+      <VisualSection />
       <div className="snap-section">
         <CaseStudiesSection />
       </div>

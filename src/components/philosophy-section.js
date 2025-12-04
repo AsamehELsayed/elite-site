@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, useScroll, useTransform } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useState, useEffect } from "react"
 import ClickSpark from "./ClickSpark"
 import LiquidEther from "./LiquidEther"
 import { LaserFlow } from "@/components/leserflow"
@@ -9,6 +9,7 @@ import Galaxy from "./star"
 
 export function PhilosophySection() {
   const ref = useRef(null)
+  const [philosophy, setPhilosophy] = useState(null)
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"]
@@ -18,6 +19,25 @@ export function PhilosophySection() {
   const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.5, 1, 0.5])
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.95, 1, 0.95])
   const y = useTransform(scrollYProgress, [0, 1], [0, -50])
+
+  // Fetch philosophy data from API
+  useEffect(() => {
+    const fetchPhilosophy = async () => {
+      try {
+        const response = await fetch('/api/philosophy')
+        if (response.ok) {
+          const data = await response.json()
+          if (data && !data.error) {
+            setPhilosophy(data)
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch philosophy:', error)
+      }
+    }
+    
+    fetchPhilosophy()
+  }, [])
 
   return (
     <section ref={ref} id="philosophy" className="w-full h-screen flex items-center justify-center bg-black relative overflow-hidden">
@@ -125,49 +145,63 @@ export function PhilosophySection() {
             />
             
             <h2 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-bold text-white leading-[1.1] mb-6 md:mb-10">
-              <motion.span
-                initial={{ opacity: 0, y: 60, filter: "blur(20px)" }}
-                whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                viewport={{ once: false }}
-                className="block relative"
-              >
-                <span className="relative z-10">Optimal</span>
+              {philosophy?.title ? (
                 <motion.span
-                  className="absolute inset-0 bg-linear-to-r from-primary/20 via-primary/5 to-transparent blur-xl"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  transition={{ duration: 1, delay: 0.5 }}
+                  initial={{ opacity: 0, y: 60, filter: "blur(20px)" }}
+                  whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
                   viewport={{ once: false }}
-                />
-              </motion.span>
-              <motion.span
-                initial={{ opacity: 0, y: 60, filter: "blur(20px)" }}
-                whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                viewport={{ once: false }}
-                className="block text-zinc-500 italic font-light"
-              >
-                Organization
-              </motion.span>
-              <motion.span
-                initial={{ opacity: 0, y: 60, filter: "blur(20px)" }}
-                whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                transition={{ duration: 0.8, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                viewport={{ once: false }}
-                className="block relative"
-              >
-                <span className="relative z-10">Meets</span>
-                <motion.span
-                  className="inline-block ml-3 gold-gradient-text"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  transition={{ duration: 0.8, delay: 0.8 }}
-                  viewport={{ once: false }}
+                  className="block relative"
                 >
-                  Design.
+                  <span className="relative z-10">{philosophy.title}</span>
                 </motion.span>
-              </motion.span>
+              ) : (
+                <>
+                  <motion.span
+                    initial={{ opacity: 0, y: 60, filter: "blur(20px)" }}
+                    whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                    viewport={{ once: false }}
+                    className="block relative"
+                  >
+                    <span className="relative z-10">Optimal</span>
+                    <motion.span
+                      className="absolute inset-0 bg-linear-to-r from-primary/20 via-primary/5 to-transparent blur-xl"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      transition={{ duration: 1, delay: 0.5 }}
+                      viewport={{ once: false }}
+                    />
+                  </motion.span>
+                  <motion.span
+                    initial={{ opacity: 0, y: 60, filter: "blur(20px)" }}
+                    whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                    viewport={{ once: false }}
+                    className="block text-zinc-500 italic font-light"
+                  >
+                    Organization
+                  </motion.span>
+                  <motion.span
+                    initial={{ opacity: 0, y: 60, filter: "blur(20px)" }}
+                    whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    transition={{ duration: 0.8, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    viewport={{ once: false }}
+                    className="block relative"
+                  >
+                    <span className="relative z-10">Meets</span>
+                    <motion.span
+                      className="inline-block ml-3 gold-gradient-text"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      transition={{ duration: 0.8, delay: 0.8 }}
+                      viewport={{ once: false }}
+                    >
+                      Design.
+                    </motion.span>
+                  </motion.span>
+                </>
+              )}
             </h2>
           </motion.div>
 
@@ -186,37 +220,56 @@ export function PhilosophySection() {
               viewport={{ once: false }}
               className="relative"
             >
-              <motion.p 
-                className="text-xl md:text-2xl lg:text-3xl text-zinc-100 font-light leading-relaxed md:leading-loose"
-                initial={{ opacity: 0, filter: "blur(10px)", y: 30 }}
-                whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-                transition={{ duration: 1, delay: 0.5 }}
-                viewport={{ once: false }}
-              >
-                We believe that true luxury lies in the seamless integration of form and function. Our philosophy is rooted in the understanding that{" "}
-                <span className="text-primary font-medium relative inline-block group">
-                  <span className="relative z-10">every pixel serves a purpose</span>
-                  <span className="absolute inset-0 bg-primary/10 blur-xl z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                </span>.
-              </motion.p>
+              {philosophy?.content ? (
+                <motion.div
+                  initial={{ opacity: 0, filter: "blur(10px)", y: 30 }}
+                  whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                  transition={{ duration: 1, delay: 0.5 }}
+                  viewport={{ once: false }}
+                >
+                  {philosophy.content.split('\n').map((line, i) => (
+                    <p key={i} className="text-xl md:text-2xl lg:text-3xl text-zinc-100 font-light leading-relaxed md:leading-loose mb-4">
+                      {line}
+                    </p>
+                  ))}
+                </motion.div>
+              ) : (
+                <>
+                  <motion.p 
+                    className="text-xl md:text-2xl lg:text-3xl text-zinc-100 font-light leading-relaxed md:leading-loose"
+                    initial={{ opacity: 0, filter: "blur(10px)", y: 30 }}
+                    whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                    transition={{ duration: 1, delay: 0.5 }}
+                    viewport={{ once: false }}
+                  >
+                    We believe that true luxury lies in the seamless integration of form and function. Our philosophy is rooted in the understanding that{" "}
+                    <span className="text-primary font-medium relative inline-block group">
+                      <span className="relative z-10">every pixel serves a purpose</span>
+                      <span className="absolute inset-0 bg-primary/10 blur-xl z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                    </span>.
+                  </motion.p>
+                </>
+              )}
             </motion.div>
             
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              viewport={{ once: false }}
-            >
-              <motion.p 
-                className="text-lg md:text-xl text-zinc-300 leading-relaxed md:leading-loose"
-                initial={{ opacity: 0, filter: "blur(10px)", y: 30 }}
-                whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-                transition={{ duration: 1, delay: 0.8 }}
+            {!philosophy?.content && (
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
                 viewport={{ once: false }}
               >
-                In a world of noise, we create clarity. By stripping away the non-essential, we reveal the essence of your brand, allowing it to resonate with an authenticity that cannot be ignored.
-              </motion.p>
-            </motion.div>
+                <motion.p 
+                  className="text-lg md:text-xl text-zinc-300 leading-relaxed md:leading-loose"
+                  initial={{ opacity: 0, filter: "blur(10px)", y: 30 }}
+                  whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                  transition={{ duration: 1, delay: 0.8 }}
+                  viewport={{ once: false }}
+                >
+                  In a world of noise, we create clarity. By stripping away the non-essential, we reveal the essence of your brand, allowing it to resonate with an authenticity that cannot be ignored.
+                </motion.p>
+              </motion.div>
+            )}
             
             {/* Enhanced divider and labels */}
             <motion.div 

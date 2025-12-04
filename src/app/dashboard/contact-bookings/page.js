@@ -13,11 +13,13 @@ import {
   Briefcase, 
   BarChart3,
   Calendar,
-  LogOut
+  LogOut,
+  Image as ImageIcon
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api'
 
 export default function ContactBookingsPage() {
   const router = useRouter()
@@ -35,6 +37,7 @@ export default function ContactBookingsPage() {
   const menuItems = [
     { icon: Home, label: 'Hero Section', href: '/dashboard/hero' },
     { icon: BookOpen, label: 'Philosophy', href: '/dashboard/philosophy' },
+    { icon: ImageIcon, label: 'Visuals', href: '/dashboard/visuals' },
     { icon: MessageSquare, label: 'Testimonials', href: '/dashboard/testimonials' },
     { icon: Briefcase, label: 'Case Studies', href: '/dashboard/case-studies' },
     { icon: BarChart3, label: 'Stats', href: '/dashboard/stats' },
@@ -58,8 +61,7 @@ export default function ContactBookingsPage() {
 
   const fetchBookings = async () => {
     try {
-      const response = await fetch('/api/contact-bookings')
-      const data = await response.json()
+      const data = await apiGet('/api/contact-bookings')
       setBookings(data)
     } catch (error) {
       console.error('Failed to fetch contact bookings:', error)
@@ -79,17 +81,9 @@ export default function ContactBookingsPage() {
       }
 
       if (editing) {
-        await fetch(`/api/contact-bookings/${editing}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })
+        await apiPut(`/api/contact-bookings/${editing}`, payload)
       } else {
-        await fetch('/api/contact-bookings', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })
+        await apiPost('/api/contact-bookings', payload)
       }
 
       setFormData({ day: '', date: '', slots: '', order: 0 })
@@ -114,7 +108,7 @@ export default function ContactBookingsPage() {
   const handleDelete = async (id) => {
     if (!confirm('Are you sure you want to delete this contact booking?')) return
     try {
-      await fetch(`/api/contact-bookings/${id}`, { method: 'DELETE' })
+      await apiDelete(`/api/contact-bookings/${id}`)
       fetchBookings()
     } catch (error) {
       console.error('Failed to delete contact booking:', error)

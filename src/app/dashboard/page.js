@@ -11,7 +11,8 @@ import {
   Home, 
   BarChart3,
   Calendar,
-  LogOut
+  LogOut,
+  Image as ImageIcon
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -50,6 +51,7 @@ export default function DashboardPage() {
   const menuItems = [
     { icon: Home, label: 'Hero Section', href: '/dashboard/hero' },
     { icon: BookOpen, label: 'Philosophy', href: '/dashboard/philosophy' },
+    { icon: ImageIcon, label: 'Visuals', href: '/dashboard/visuals' },
     { icon: MessageSquare, label: 'Testimonials', href: '/dashboard/testimonials' },
     { icon: Briefcase, label: 'Case Studies', href: '/dashboard/case-studies' },
     { icon: BarChart3, label: 'Stats', href: '/dashboard/stats' },

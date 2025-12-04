@@ -33,9 +33,22 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# database
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+dev.db
+*.sqlite
+*.sqlite3
+
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# uploads
+/public/uploads/*
+!/public/uploads/.gitkeep

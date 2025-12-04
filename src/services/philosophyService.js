@@ -19,6 +19,11 @@ export const philosophyService = {
   },
 
   async upsert(data) {
+    // Validate that we have content
+    if (!data || !data.content) {
+      throw new Error('Philosophy content is required')
+    }
+
     const existing = await prisma.philosophy.findFirst()
     if (existing) {
       return await prisma.philosophy.update({
@@ -31,6 +36,7 @@ export const philosophyService = {
     })
   }
 }
+
 
 
 

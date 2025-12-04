@@ -19,6 +19,11 @@ export const heroService = {
   },
 
   async upsert(data) {
+    // Validate that we have at least some content
+    if (!data || Object.keys(data).length === 0) {
+      throw new Error('Hero data cannot be empty')
+    }
+
     const existing = await prisma.hero.findFirst()
     if (existing) {
       return await prisma.hero.update({
@@ -31,6 +36,7 @@ export const heroService = {
     })
   }
 }
+
 
 
 

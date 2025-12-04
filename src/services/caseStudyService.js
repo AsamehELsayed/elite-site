@@ -15,6 +15,12 @@ export const caseStudyService = {
 
   async create(data) {
     const { title, category, image, year, description, link, order = 0 } = data
+    
+    // Validate required fields
+    if (!title || !category || !image || !year || !description) {
+      throw new Error('Missing required fields: title, category, image, year, and description are required')
+    }
+
     return await prisma.caseStudy.create({
       data: {
         title,
@@ -41,6 +47,7 @@ export const caseStudyService = {
     })
   }
 }
+
 
 
 

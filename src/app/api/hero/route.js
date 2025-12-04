@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { heroService } from '@/services/heroService'
+import { requireAdmin } from '@/lib/auth'
 
+// Public: Guest users can view hero section
 export async function GET() {
   try {
     const hero = await heroService.get()
@@ -13,7 +15,14 @@ export async function GET() {
   }
 }
 
+// Protected: Only authenticated admin can create hero
 export async function POST(request) {
+  // Verify authentication
+  const authResult = await requireAdmin(request)
+  if (authResult instanceof NextResponse) {
+    return authResult // Return error response if not authenticated
+  }
+
   try {
     const body = await request.json()
     const hero = await heroService.create(body)
@@ -26,7 +35,14 @@ export async function POST(request) {
   }
 }
 
+// Protected: Only authenticated admin can update hero
 export async function PUT(request) {
+  // Verify authentication
+  const authResult = await requireAdmin(request)
+  if (authResult instanceof NextResponse) {
+    return authResult // Return error response if not authenticated
+  }
+
   try {
     const body = await request.json()
     const hero = await heroService.upsert(body)
@@ -38,6 +54,7 @@ export async function PUT(request) {
     )
   }
 }
+
 
 
 

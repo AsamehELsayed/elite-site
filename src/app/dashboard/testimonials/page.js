@@ -13,11 +13,13 @@ import {
   Briefcase, 
   BarChart3,
   Calendar,
-  LogOut
+  LogOut,
+  Image as ImageIcon
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api'
 
 export default function TestimonialsPage() {
   const router = useRouter()
@@ -36,6 +38,7 @@ export default function TestimonialsPage() {
   const menuItems = [
     { icon: Home, label: 'Hero Section', href: '/dashboard/hero' },
     { icon: BookOpen, label: 'Philosophy', href: '/dashboard/philosophy' },
+    { icon: ImageIcon, label: 'Visuals', href: '/dashboard/visuals' },
     { icon: MessageSquare, label: 'Testimonials', href: '/dashboard/testimonials' },
     { icon: Briefcase, label: 'Case Studies', href: '/dashboard/case-studies' },
     { icon: BarChart3, label: 'Stats', href: '/dashboard/stats' },
@@ -53,8 +56,7 @@ export default function TestimonialsPage() {
 
   const fetchTestimonials = async () => {
     try {
-      const response = await fetch('/api/testimonials')
-      const data = await response.json()
+      const data = await apiGet('/api/testimonials')
       setTestimonials(data)
     } catch (error) {
       console.error('Failed to fetch testimonials:', error)
@@ -74,17 +76,9 @@ export default function TestimonialsPage() {
       }
 
       if (editing) {
-        await fetch(`/api/testimonials/${editing}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })
+        await apiPut(`/api/testimonials/${editing}`, payload)
       } else {
-        await fetch('/api/testimonials', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })
+        await apiPost('/api/testimonials', payload)
       }
 
       setFormData({ quote: '', author: '', role: '', city: '', metrics: '', order: 0 })
@@ -92,6 +86,7 @@ export default function TestimonialsPage() {
       fetchTestimonials()
     } catch (error) {
       console.error('Failed to save testimonial:', error)
+      alert('Failed to save testimonial')
     }
   }
 
@@ -110,10 +105,11 @@ export default function TestimonialsPage() {
   const handleDelete = async (id) => {
     if (!confirm('Are you sure you want to delete this testimonial?')) return
     try {
-      await fetch(`/api/testimonials/${id}`, { method: 'DELETE' })
+      await apiDelete(`/api/testimonials/${id}`)
       fetchTestimonials()
     } catch (error) {
       console.error('Failed to delete testimonial:', error)
+      alert('Failed to delete testimonial')
     }
   }
 

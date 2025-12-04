@@ -14,7 +14,8 @@ import LiquidEther from "./LiquidEther"
 import { LaserFlow } from "@/components/leserflow"
 import Galaxy from "./star"
 
-const testimonials = [
+// Default fallback data
+const defaultTestimonials = [
   {
     quote:
       "Elite made our private banking launch feel like a cinematic premiere. Conversion jumped 146% without any paid push.",
@@ -23,33 +24,9 @@ const testimonials = [
     city: "Dubai",
     metrics: ["+146% launch conv.", "3 week rollout"],
   },
-  {
-    quote:
-      "They choreographed an entire digital universe for our couture drops. Clients now queue online like it's Paris Fashion Week.",
-    author: "Lucien Marche",
-    role: "Creative Director — Maison Marche",
-    city: "Paris",
-    metrics: ["83% repeat rate", "$4.2M first drop"],
-  },
-  {
-    quote:
-      "Elite rebuilt the way UHNW families discover our properties. Leads doubled and every visit feels hand-crafted.",
-    author: "Viola Ren",
-    role: "Managing Partner — Ren Capital Estates",
-    city: "Singapore",
-    metrics: ["2.1x qualified leads", "6 markets synced"],
-  },
-  {
-    quote:
-      "Their sensory, editorial approach to experiential travel made our bookings surge while keeping the brand impossibly rare.",
-    author: "Sora Ahn",
-    role: "Founder — Nine Horizons",
-    city: "Seoul",
-    metrics: ["62% avg. cart uplift", "NPS 92"],
-  },
 ]
 
-const stats = [
+const defaultStats = [
   { label: "Ultra-luxury launches activated", value: "38" },
   { label: "Average uplift in premium conversions", value: "212%" },
   { label: "Markets scaling same-day experiences", value: "11" },
@@ -70,11 +47,52 @@ const cardEntrance = {
 
 export function TestimonialsSection() {
   const [index, setIndex] = useState(0)
+  const [testimonials, setTestimonials] = useState(defaultTestimonials)
+  const [stats, setStats] = useState(defaultStats)
+  const [loading, setLoading] = useState(true)
   const showcaseRef = useRef(null)
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
 
-  const activeTestimonial = useMemo(() => testimonials[index], [index])
+  // Fetch testimonials and stats from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [testimonialsRes, statsRes] = await Promise.all([
+          fetch('/api/testimonials'),
+          fetch('/api/stats')
+        ])
+        
+        if (testimonialsRes.ok) {
+          const testimonialsData = await testimonialsRes.json()
+          if (Array.isArray(testimonialsData) && testimonialsData.length > 0) {
+            setTestimonials(testimonialsData.map(t => ({
+              ...t,
+              metrics: Array.isArray(t.metrics) ? t.metrics : (t.metrics ? JSON.parse(t.metrics) : [])
+            })))
+          }
+        }
+        
+        if (statsRes.ok) {
+          const statsData = await statsRes.json()
+          if (Array.isArray(statsData) && statsData.length > 0) {
+            setStats(statsData.map(s => ({
+              label: s.label,
+              value: s.value
+            })))
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch testimonials/stats:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchData()
+  }, [])
+
+  const activeTestimonial = useMemo(() => testimonials[index] || testimonials[0], [index, testimonials])
 
   useEffect(() => {
     const timer = setInterval(
@@ -182,20 +200,7 @@ export function TestimonialsSection() {
           }}
         />
         {/* Galaxy component */}
-        <div className="absolute inset-0 z-0">
-          <div className="absolute bottom-0 left-0 right-0 h-1/2 z-0">
-            <Galaxy
-              mouseRepulsion={false}
-              mouseInteraction={false}
-              density={3}
-              glowIntensity={0.5}
-              saturation={0.1}
-              hueShift={1}
-            />
-            {/* Gradient fade from opaque at top (hiding) to transparent at bottom (showing) */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black via-black/50 to-transparent pointer-events-none z-10 opacity-50" />
-          </div>
-        </div>
+    
       </div>
 
       <div className="relative z-10 h-full w-full ">

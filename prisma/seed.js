@@ -1,28 +1,44 @@
 const { PrismaClient } = require('@prisma/client')
 const bcrypt = require('bcryptjs')
+const fs = require('fs')
+const path = require('path')
+
+// Set DATABASE_URL if not set and using SQLite
+if (!process.env.DATABASE_URL) {
+  const schemaPath = path.join(__dirname, 'schema.prisma')
+  if (fs.existsSync(schemaPath)) {
+    const schema = fs.readFileSync(schemaPath, 'utf8')
+    if (schema.includes('provider = "sqlite"')) {
+      process.env.DATABASE_URL = 'file:./dev.db'
+      console.log('💡 DATABASE_URL not set, using default: file:./dev.db')
+    }
+  }
+}
 
 const prisma = new PrismaClient()
 
 async function main() {
-    if(prisma.user.findUnique({ where: { email: 'admin@elite.com' } })) {
-        console.log('Admin user already exists')
-        return
-    }
   console.log('🌱 Starting database seed...')
 
   // Create admin user
-  const hashedPassword = await bcrypt.hash('admin123', 10)
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@elite.com' },
-    update: {},
-    create: {
-      email: 'admin@elite.com',
-      password: hashedPassword,
-      name: 'Admin User',
-      role: 'admin'
-    }
+  const existingAdmin = await prisma.user.findUnique({ 
+    where: { email: 'admin@elite.com' } 
   })
-  console.log('✅ Admin user created:', admin.email)
+  
+  if (existingAdmin) {
+    console.log('ℹ️  Admin user already exists, skipping creation')
+  } else {
+    const hashedPassword = await bcrypt.hash('admin123', 10)
+    const admin = await prisma.user.create({
+      data: {
+        email: 'admin@elite.com',
+        password: hashedPassword,
+        name: 'Admin User',
+        role: 'admin'
+      }
+    })
+    console.log('✅ Admin user created:', admin.email)
+  }
 
   // Clear existing data
   await prisma.testimonial.deleteMany()

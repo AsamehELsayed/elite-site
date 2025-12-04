@@ -10,11 +10,13 @@ import {
   Briefcase, 
   BarChart3,
   Calendar,
-  LogOut
+  LogOut,
+  Image as ImageIcon
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { apiPut } from '@/lib/api'
 
 export default function PhilosophyPage() {
   const router = useRouter()
@@ -30,6 +32,7 @@ export default function PhilosophyPage() {
   const menuItems = [
     { icon: Home, label: 'Hero Section', href: '/dashboard/hero' },
     { icon: BookOpen, label: 'Philosophy', href: '/dashboard/philosophy' },
+    { icon: ImageIcon, label: 'Visuals', href: '/dashboard/visuals' },
     { icon: MessageSquare, label: 'Testimonials', href: '/dashboard/testimonials' },
     { icon: Briefcase, label: 'Case Studies', href: '/dashboard/case-studies' },
     { icon: BarChart3, label: 'Stats', href: '/dashboard/stats' },
@@ -73,17 +76,7 @@ export default function PhilosophyPage() {
     e.preventDefault()
     setSaving(true)
     try {
-      const response = await fetch('/api/philosophy', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to save philosophy')
-      }
-
-      const data = await response.json()
+      const data = await apiPut('/api/philosophy', formData)
       setPhilosophy(data)
       alert('Philosophy updated successfully!')
     } catch (error) {

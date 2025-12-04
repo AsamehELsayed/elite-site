@@ -26,6 +26,12 @@ export const testimonialService = {
 
   async create(data) {
     const { quote, author, role, city, metrics, order = 0 } = data
+    
+    // Validate required fields
+    if (!quote || !author || !role || !city) {
+      throw new Error('Missing required fields: quote, author, role, and city are required')
+    }
+
     const testimonial = await prisma.testimonial.create({
       data: {
         quote,

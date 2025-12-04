@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono, Playfair_Display } from 'next/font/google'
+import { Geist, Geist_Mono, Playfair_Display, Bebas_Neue } from 'next/font/google'
 // import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import { CursorFollower } from '@/components/cursor-follower'
@@ -6,6 +6,7 @@ import { CursorFollower } from '@/components/cursor-follower'
 const geist = Geist({ subsets: ["latin"], variable: '--font-sans' });
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: '--font-mono' });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: '--font-serif' });
+const bebasNeue = Bebas_Neue({ subsets: ["latin"], weight: "400", variable: '--font-display' });
 
 export const metadata = {
   title: 'Elite | Premium Digital Marketing Agency',
@@ -19,7 +20,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${geist.variable} ${geistMono.variable} ${playfair.variable} font-sans antialiased bg-black text-white selection:bg-primary selection:text-black`}>
+      <body className={`${geist.variable} ${geistMono.variable} ${playfair.variable} ${bebasNeue.variable} font-sans antialiased bg-black text-white selection:bg-primary selection:text-black`}>
         {children}
         <CursorFollower />
         {/* <Analytics /> */}

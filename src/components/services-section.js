@@ -52,53 +52,45 @@ export function ServicesSection() {
 
   return (
     <section ref={ref} className="w-full h-screen flex items-center bg-black relative overflow-hidden">
-      <div className="absolute inset-0 z-0">
-        <LiquidEther
-          colors={['#EDC9Af']}
-          mouseForce={10}
-          cursorSize={100}
-          isViscous={false}
-          viscous={30}
-          iterationsViscous={32}
-          iterationsPoisson={32}
-          resolution={0.5}
-          isBounce={false}
-          autoSpeed={0.5}
-          autoIntensity={2.2}
-          takeoverDuration={0.25}
-          autoResumeDelay={3000}
-          autoRampDuration={0.6}
-        />
-      </div>
-      <div className="pointer-events-none absolute inset-0 z-[1]">
-        <LaserFlow
-          color="#D4AF37"
-          horizontalBeamOffset={0.3}
-          verticalBeamOffset={-0.3}
-          verticalSizing={1.4}
-          horizontalSizing={0.5}
-          wispIntensity={4}
-          fogIntensity={0.2}
-          className="opacity-60 mix-blend-screen"
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(212,175,55,0.12),transparent_55%)]"></div>
-        <div className="absolute inset-0 bg-linear-to-b from-black/15 via-transparent to-black/50"></div>
-      </div>
-      {/* Galaxy component */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute bottom-0 left-0 right-0 h-1/2 z-0">
-          <Galaxy
-            mouseRepulsion={false}
-            mouseInteraction={false}
-            density={3}
-            glowIntensity={0.5}
-            saturation={0.1}
-            hueShift={1}
-          />
-          {/* Gradient fade from opaque at top (hiding) to transparent at bottom (showing) */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black via-black/50 to-transparent pointer-events-none z-10 opacity-50" />
-        </div>
-      </div>
+      {/* Enhanced background effects */}
+      <motion.div 
+        className="absolute top-0 left-0 w-64 h-64 bg-primary/10 rounded-full blur-[100px]"
+        style={{ y, opacity }}
+        animate={{
+          scale: [1, 1.2, 1],
+          x: [0, 30, 0],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+      <motion.div 
+        className="absolute bottom-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-[120px]"
+        style={{ scale, opacity }}
+        animate={{
+          scale: [1, 1.1, 1],
+          x: [0, -20, 0],
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+      
+      {/* Subtle grid pattern overlay */}
+      <div className="absolute inset-0 opacity-[0.02] pointer-events-none" 
+        style={{
+          backgroundImage: `linear-gradient(rgba(212, 175, 55, 0.1) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(212, 175, 55, 0.1) 1px, transparent 1px)`,
+          backgroundSize: '50px 50px'
+        }}
+      />
+
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black pointer-events-none" />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <motion.div

@@ -13,11 +13,13 @@ import {
   Briefcase, 
   BarChart3,
   Calendar,
-  LogOut
+  LogOut,
+  Image as ImageIcon
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api'
 
 export default function CaseStudiesPage() {
   const router = useRouter()
@@ -37,6 +39,7 @@ export default function CaseStudiesPage() {
   const menuItems = [
     { icon: Home, label: 'Hero Section', href: '/dashboard/hero' },
     { icon: BookOpen, label: 'Philosophy', href: '/dashboard/philosophy' },
+    { icon: ImageIcon, label: 'Visuals', href: '/dashboard/visuals' },
     { icon: MessageSquare, label: 'Testimonials', href: '/dashboard/testimonials' },
     { icon: Briefcase, label: 'Case Studies', href: '/dashboard/case-studies' },
     { icon: BarChart3, label: 'Stats', href: '/dashboard/stats' },
@@ -54,8 +57,7 @@ export default function CaseStudiesPage() {
 
   const fetchCaseStudies = async () => {
     try {
-      const response = await fetch('/api/case-studies')
-      const data = await response.json()
+      const data = await apiGet('/api/case-studies')
       setCaseStudies(data)
     } catch (error) {
       console.error('Failed to fetch case studies:', error)
@@ -73,17 +75,9 @@ export default function CaseStudiesPage() {
       }
 
       if (editing) {
-        await fetch(`/api/case-studies/${editing}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })
+        await apiPut(`/api/case-studies/${editing}`, payload)
       } else {
-        await fetch('/api/case-studies', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })
+        await apiPost('/api/case-studies', payload)
       }
 
       setFormData({ title: '', category: '', image: '', year: '', description: '', link: '', order: 0 })
@@ -91,6 +85,7 @@ export default function CaseStudiesPage() {
       fetchCaseStudies()
     } catch (error) {
       console.error('Failed to save case study:', error)
+      alert('Failed to save case study')
     }
   }
 
@@ -110,10 +105,11 @@ export default function CaseStudiesPage() {
   const handleDelete = async (id) => {
     if (!confirm('Are you sure you want to delete this case study?')) return
     try {
-      await fetch(`/api/case-studies/${id}`, { method: 'DELETE' })
+      await apiDelete(`/api/case-studies/${id}`)
       fetchCaseStudies()
     } catch (error) {
       console.error('Failed to delete case study:', error)
+      alert('Failed to delete case study')
     }
   }
 

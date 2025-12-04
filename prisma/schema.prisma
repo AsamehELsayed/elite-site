@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -22,7 +22,7 @@ model User {
 
 model Testimonial {
   id        String   @id @default(cuid())
-  quote     String   @db.Text
+  quote     String   
   author    String
   role      String
   city      String
@@ -38,7 +38,7 @@ model CaseStudy {
   category    String
   image       String
   year        String
-  description String   @db.Text
+  description String   
   link        String?
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -48,7 +48,7 @@ model CaseStudy {
 model Philosophy {
   id        String   @id @default(cuid())
   title     String?
-  content   String   @db.Text // Main philosophy text
+  content   String    // Main philosophy text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -57,7 +57,7 @@ model Hero {
   id          String   @id @default(cuid())
   title       String?
   subtitle    String?
-  description String?  @db.Text
+  description String?  
   ctaText     String?
   ctaLink     String?
   createdAt   DateTime @default(now())
@@ -74,11 +74,39 @@ model Stat {
 }
 
 model ContactBooking {
+  id             String   @id @default(cuid())
+  // Booking slot fields (for admin-created booking slots)
+  day            String?
+  date           String?
+  slots          String?  // JSON array stored as string
+  // Contact form fields (for user submissions)
+  name           String?
+  email          String?
+  phone          String?
+  message        String?  
+  preferredDate  String?
+  preferredTime  String?
+  order          Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Visual {
   id        String   @id @default(cuid())
-  day       String
-  date      String
-  slots     String   // JSON array stored as string
-  order     Int      @default(0)
+  // Section texts
+  section1Title      String?  // "Discover What Makes Us"
+  section1Highlight  String?  // "Truly Elite 👇"
+  section2Title      String?  // "We don't just create designs, We craft"
+  section2Highlight  String?  // "Digital Experiences 💼"
+  section3Title      String?  // "Every Project Tells A"
+  section3Highlight  String?  // "Success Story 😎"
+  section4Title      String?  // "Witness The Power Of"
+  section4Highlight  String?  // "Elite Design ☝️"
+  section5Title      String?  // "We Turn Your Vision Into"
+  section5Highlight  String?  // "Stunning Reality 😎"
+  // Gallery images (JSON arrays)
+  gallery1Images    String?  // JSON array of {src, skew}
+  gallery2Images    String?  // JSON array of {src}
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
