@@ -19,24 +19,15 @@ const isDocker = process.env.DOCKER_ENV === 'true' || process.env.IN_DOCKER === 
 let provider = 'mysql' // Default to MySQL
 let isLocalDev = false
 
-// Check if we should use SQLite for local development
-if (env === 'development' && !isDocker) {
-  // Use SQLite if:
-  // 1. DATABASE_URL is not set (default for local dev)
-  // 2. DATABASE_URL starts with "file:" (SQLite format)
-  // 3. DATABASE_URL contains "sqlite"
-  if (!databaseUrl || databaseUrl.startsWith('file:') || databaseUrl.includes('sqlite')) {
-    provider = 'sqlite'
-    isLocalDev = true
-  }
-}
-
-// Also check DATABASE_URL format directly
+// Decide provider based on explicit DATABASE_URL
 if (databaseUrl.startsWith('file:') || databaseUrl.includes('sqlite')) {
   provider = 'sqlite'
   isLocalDev = true
-} else if (databaseUrl.startsWith('mysql:') || databaseUrl.startsWith('postgresql:')) {
-  provider = databaseUrl.startsWith('mysql:') ? 'mysql' : 'postgresql'
+} else if (databaseUrl.startsWith('postgresql:')) {
+  provider = 'postgresql'
+} else {
+  // Default to MySQL even when DATABASE_URL is not set
+  provider = 'mysql'
 }
 
 // Read current schema
@@ -46,10 +37,13 @@ let schema = fs.readFileSync(schemaPath, 'utf8')
 // For SQLite, set default DATABASE_URL if not provided
 let databaseUrlConfig = 'env("DATABASE_URL")'
 if (provider === 'sqlite' && !databaseUrl) {
-  // Set default SQLite database path
   databaseUrlConfig = 'env("DATABASE_URL")'
-  // Also set it as environment variable for this process
   process.env.DATABASE_URL = 'file:./dev.db'
+}
+// For MySQL, set a sensible default when missing so Prisma stays on MySQL
+if (provider === 'mysql' && !databaseUrl) {
+  process.env.DATABASE_URL = 'mysql://root:@localhost:3306/elite'
+  databaseUrlConfig = 'env("DATABASE_URL")'
 }
 
 schema = schema.replace(

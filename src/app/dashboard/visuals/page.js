@@ -3,24 +3,28 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { 
-  Home, 
-  BookOpen, 
-  MessageSquare, 
-  Briefcase, 
+import {
+  Home,
+  BookOpen,
+  MessageSquare,
+  Briefcase,
   BarChart3,
   Calendar,
   LogOut,
-  Image as ImageIcon
+  Image as ImageIcon,
+  FileText,
+  AlertCircle
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { ImageUpload } from '@/components/ui/image-upload'
 import { apiGet, apiPut } from '@/lib/api'
+import { navigationItems } from '@/lib/navigation'
+import { useLocale } from '@/components/locale-provider'
 
 export default function VisualsPage() {
   const router = useRouter()
+  const { locale, setLocale } = useLocale()
   const [visual, setVisual] = useState(null)
   const [loading, setLoading] = useState(true)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -40,15 +44,7 @@ export default function VisualsPage() {
     gallery2Images: []
   })
 
-  const menuItems = [
-    { icon: Home, label: 'Hero Section', href: '/dashboard/hero' },
-    { icon: BookOpen, label: 'Philosophy', href: '/dashboard/philosophy' },
-    { icon: ImageIcon, label: 'Visuals', href: '/dashboard/visuals' },
-    { icon: MessageSquare, label: 'Testimonials', href: '/dashboard/testimonials' },
-    { icon: Briefcase, label: 'Case Studies', href: '/dashboard/case-studies' },
-    { icon: BarChart3, label: 'Stats', href: '/dashboard/stats' },
-    { icon: Calendar, label: 'Contact Bookings', href: '/dashboard/contact-bookings' },
-  ]
+  const menuItems = navigationItems
 
   const handleLogout = () => {
     localStorage.removeItem('token')
@@ -63,11 +59,11 @@ export default function VisualsPage() {
     }
     setIsAuthenticated(true)
     fetchVisual()
-  }, [router])
+  }, [router, locale])
 
   const fetchVisual = async () => {
     try {
-      const data = await apiGet('/api/visuals')
+      const data = await apiGet(`/api/visuals?lang=${locale}`)
       if (data && !data.error) {
         setVisual(data)
         setFormData({
@@ -120,7 +116,7 @@ export default function VisualsPage() {
         gallery2Images: Array.isArray(formData.gallery2Images) ? formData.gallery2Images : []
       }
       
-      const data = await apiPut('/api/visuals', payload)
+      const data = await apiPut(`/api/visuals?lang=${locale}`, payload)
       setVisual(data)
       alert('Visual section updated successfully!')
     } catch (error) {
@@ -188,7 +184,22 @@ export default function VisualsPage() {
         {/* Main Content */}
         <main className="flex-1 p-8 overflow-y-auto">
           <div className="max-w-6xl mx-auto">
-            <h1 className="text-4xl font-serif mb-8">Visual Section</h1>
+            <div className="flex items-center justify-between mb-8 gap-4">
+              <h1 className="text-4xl font-serif">Visual Section</h1>
+              <div className="flex items-center gap-2">
+                {['en', 'ar'].map((lng) => (
+                  <Button
+                    key={lng}
+                    type="button"
+                    variant={locale === lng ? 'default' : 'outline'}
+                    className={locale === lng ? 'bg-primary text-black' : 'border-zinc-700 text-zinc-300'}
+                    onClick={() => setLocale(lng)}
+                  >
+                    {lng.toUpperCase()}
+                  </Button>
+                ))}
+              </div>
+            </div>
 
             <div className="bg-zinc-900 rounded-lg p-6 border border-zinc-800">
               <form onSubmit={handleSubmit} className="space-y-6">

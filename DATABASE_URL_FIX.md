@@ -128,3 +128,10 @@ The solution works on:
 
 You can now run `npm run db:push` without setting `DATABASE_URL` manually!
 
+
+
+
+
+
+
+

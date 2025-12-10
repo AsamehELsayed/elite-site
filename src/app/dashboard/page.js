@@ -3,18 +3,25 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { 
-  LayoutDashboard, 
-  MessageSquare, 
-  Briefcase, 
-  BookOpen, 
-  Home, 
+import {
+  LayoutDashboard,
+  MessageSquare,
+  Briefcase,
+  BookOpen,
+  Home,
   BarChart3,
   Calendar,
   LogOut,
-  Image as ImageIcon
+  Image as ImageIcon,
+  FileText,
+  AlertCircle,
+  Menu,
+  Wrench,
+  Phone,
+  File
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { navigationItems } from '@/lib/navigation'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -48,15 +55,7 @@ export default function DashboardPage() {
     return null
   }
 
-  const menuItems = [
-    { icon: Home, label: 'Hero Section', href: '/dashboard/hero' },
-    { icon: BookOpen, label: 'Philosophy', href: '/dashboard/philosophy' },
-    { icon: ImageIcon, label: 'Visuals', href: '/dashboard/visuals' },
-    { icon: MessageSquare, label: 'Testimonials', href: '/dashboard/testimonials' },
-    { icon: Briefcase, label: 'Case Studies', href: '/dashboard/case-studies' },
-    { icon: BarChart3, label: 'Stats', href: '/dashboard/stats' },
-    { icon: Calendar, label: 'Contact Bookings', href: '/dashboard/contact-bookings' },
-  ]
+  const menuItems = navigationItems
 
   return (
     <div className="min-h-screen bg-black text-white">

@@ -1,6 +1,10 @@
 "use client"
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import Image from 'next/image';
 import { gsap } from 'gsap';
+
+// Blur placeholder data URL
+const blurDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=='
 
 const useMedia = (queries, values, defaultValue) => {
   const get = () => values[queries.findIndex(q => matchMedia(q).matches)] ?? defaultValue;
@@ -192,26 +196,47 @@ const Masonry = ({
 
   return (
     <div ref={containerRef} className="relative w-full h-full">
-      {grid.map(item => (
-        <div
-          key={item.id}
-          data-key={item.id}
-          className="absolute box-content"
-          style={{ willChange: 'transform, width, height, opacity' }}
-          onClick={() => window.open(item.url, '_blank', 'noopener')}
-          onMouseEnter={e => handleMouseEnter(item.id, e.currentTarget)}
-          onMouseLeave={e => handleMouseLeave(item.id, e.currentTarget)}
-        >
+      {grid.map(item => {
+        const isExternal = item.img.startsWith('http');
+        return (
           <div
-            className="relative w-full h-full bg-cover bg-center rounded-[10px] shadow-[0px_10px_50px_-10px_rgba(0,0,0,0.2)] uppercase text-[10px] leading-[10px]"
-            style={{ backgroundImage: `url(${item.img})` }}
+            key={item.id}
+            data-key={item.id}
+            className="absolute box-content"
+            style={{ willChange: 'transform, width, height, opacity' }}
+            onClick={() => window.open(item.url, '_blank', 'noopener')}
+            onMouseEnter={e => handleMouseEnter(item.id, e.currentTarget)}
+            onMouseLeave={e => handleMouseLeave(item.id, e.currentTarget)}
           >
-            {colorShiftOnHover && (
-              <div className="color-overlay absolute inset-0 rounded-[10px] bg-gradient-to-tr from-pink-500/50 to-sky-500/50 opacity-0 pointer-events-none" />
-            )}
+            <div className="relative w-full h-full rounded-[10px] shadow-[0px_10px_50px_-10px_rgba(0,0,0,0.2)] overflow-hidden uppercase text-[10px] leading-[10px]">
+              <Image
+                src={item.img}
+                alt={item.title || `Masonry item ${item.id}`}
+                fill
+                sizes="(max-width: 1500px) 20vw, (max-width: 1000px) 25vw, (max-width: 600px) 33vw, 50vw"
+                className="object-cover"
+                unoptimized={isExternal}
+                loading="lazy"
+                placeholder="blur"
+                blurDataURL={blurDataURL}
+                onError={(e) => {
+                  e.target.style.display = 'none'
+                  const parent = e.target.parentElement
+                  if (parent) {
+                    const fallback = document.createElement('div')
+                    fallback.className = 'absolute inset-0 bg-zinc-900 flex items-center justify-center'
+                    fallback.innerHTML = '<span class="text-zinc-600 text-xs">Image unavailable</span>'
+                    parent.appendChild(fallback)
+                  }
+                }}
+              />
+              {colorShiftOnHover && (
+                <div className="color-overlay absolute inset-0 rounded-[10px] bg-gradient-to-tr from-pink-500/50 to-sky-500/50 opacity-0 pointer-events-none" />
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

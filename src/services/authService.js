@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 
 export const authService = {
   async login(email, password) {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.User.findUnique({
       where: { email }
     })
 
@@ -44,7 +44,7 @@ export const authService = {
 
   async createUser(email, password, name, role = 'admin') {
     const hashedPassword = await bcrypt.hash(password, 10)
-    return await prisma.user.create({
+    return await prisma.User.create({
       data: {
         email,
         password: hashedPassword,
@@ -61,6 +61,8 @@ export const authService = {
     })
   }
 }
+
+
 
 
 

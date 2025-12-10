@@ -3,47 +3,46 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Home, 
-  BookOpen, 
-  MessageSquare, 
-  Briefcase, 
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Home,
+  BookOpen,
+  MessageSquare,
+  Briefcase,
   BarChart3,
   Calendar,
   LogOut,
-  Image as ImageIcon
+  Image as ImageIcon,
+  FileText,
+  AlertCircle
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import { RichTextEditor } from '@/components/ui/rich-text-editor'
 import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api'
+import { navigationItems } from '@/lib/navigation'
+import { useLocale } from '@/components/locale-provider'
+
+const getEmptyForm = () => ({
+  quote: '',
+  author: '',
+  role: '',
+  city: '',
+  metrics: '',
+  order: 0
+})
 
 export default function TestimonialsPage() {
   const router = useRouter()
+  const { locale, setLocale } = useLocale()
   const [testimonials, setTestimonials] = useState([])
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(null)
-  const [formData, setFormData] = useState({
-    quote: '',
-    author: '',
-    role: '',
-    city: '',
-    metrics: '',
-    order: 0
-  })
+  const [formData, setFormData] = useState(getEmptyForm())
 
-  const menuItems = [
-    { icon: Home, label: 'Hero Section', href: '/dashboard/hero' },
-    { icon: BookOpen, label: 'Philosophy', href: '/dashboard/philosophy' },
-    { icon: ImageIcon, label: 'Visuals', href: '/dashboard/visuals' },
-    { icon: MessageSquare, label: 'Testimonials', href: '/dashboard/testimonials' },
-    { icon: Briefcase, label: 'Case Studies', href: '/dashboard/case-studies' },
-    { icon: BarChart3, label: 'Stats', href: '/dashboard/stats' },
-    { icon: Calendar, label: 'Contact Bookings', href: '/dashboard/contact-bookings' },
-  ]
+  const menuItems = navigationItems
 
   const handleLogout = () => {
     localStorage.removeItem('token')
@@ -52,11 +51,37 @@ export default function TestimonialsPage() {
 
   useEffect(() => {
     fetchTestimonials()
-  }, [])
+  }, [locale])
+
+  useEffect(() => {
+    // Keep the form aligned with the selected locale to avoid cross-locale overwrites
+    if (!editing) {
+      setFormData(getEmptyForm())
+      return
+    }
+
+    const current = testimonials.find((item) => item.id === editing)
+    if (!current) {
+      setEditing(null)
+      setFormData(getEmptyForm())
+      return
+    }
+
+    setFormData({
+      quote: current.quote || '',
+      author: current.author || '',
+      role: current.role || '',
+      city: current.city || '',
+      metrics: Array.isArray(current.metrics)
+        ? current.metrics.join(', ')
+        : current.metrics || '',
+      order: current.order ?? 0
+    })
+  }, [locale, testimonials, editing])
 
   const fetchTestimonials = async () => {
     try {
-      const data = await apiGet('/api/testimonials')
+      const data = await apiGet(`/api/testimonials?lang=${locale}`)
       setTestimonials(data)
     } catch (error) {
       console.error('Failed to fetch testimonials:', error)
@@ -76,12 +101,12 @@ export default function TestimonialsPage() {
       }
 
       if (editing) {
-        await apiPut(`/api/testimonials/${editing}`, payload)
+        await apiPut(`/api/testimonials/${editing}?lang=${locale}`, payload)
       } else {
-        await apiPost('/api/testimonials', payload)
+        await apiPost(`/api/testimonials?lang=${locale}`, payload)
       }
 
-      setFormData({ quote: '', author: '', role: '', city: '', metrics: '', order: 0 })
+      setFormData(getEmptyForm())
       setEditing(null)
       fetchTestimonials()
     } catch (error) {
@@ -165,12 +190,25 @@ export default function TestimonialsPage() {
         {/* Main Content */}
         <main className="flex-1 p-8">
           <div className="max-w-6xl mx-auto">
-            <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-serif">Testimonials</h1>
+          <div className="flex items-center gap-2">
+            {['en', 'ar'].map((lng) => (
+              <Button
+                key={lng}
+                type="button"
+                variant={locale === lng ? 'default' : 'outline'}
+                className={locale === lng ? 'bg-primary text-black' : 'border-zinc-700 text-zinc-300'}
+                onClick={() => setLocale(lng)}
+              >
+                {lng.toUpperCase()}
+              </Button>
+            ))}
+          </div>
           <Button
             onClick={() => {
               setEditing(null)
-              setFormData({ quote: '', author: '', role: '', city: '', metrics: '', order: 0 })
+              setFormData(getEmptyForm())
             }}
             className="bg-primary text-black"
           >
@@ -188,12 +226,11 @@ export default function TestimonialsPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm mb-2">Quote</label>
-                <Textarea
+                <RichTextEditor
                   value={formData.quote}
-                  onChange={(e) => setFormData({ ...formData, quote: e.target.value })}
-                  required
-                  className="bg-zinc-800 border-zinc-700"
-                  rows={4}
+                  onChange={(quote) => setFormData({ ...formData, quote })}
+                  placeholder="Enter the client's quote (rich text supported)"
+                  className="bg-zinc-900/60"
                 />
               </div>
               <div>
@@ -278,7 +315,12 @@ export default function TestimonialsPage() {
                     </Button>
                   </div>
                 </div>
-                <p className="text-zinc-300 mb-3">"{testimonial.quote}"</p>
+                {testimonial.quote ? (
+                  <div
+                    className="text-zinc-300 mb-3 leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: testimonial.quote }}
+                  />
+                ) : null}
                 {Array.isArray(testimonial.metrics) && testimonial.metrics.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {testimonial.metrics.map((metric, idx) => (

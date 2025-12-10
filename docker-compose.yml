@@ -3,10 +3,10 @@ services:
     image: mysql:8.0
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_ROOT_HOST: "%"
       MYSQL_DATABASE: elite
-      MYSQL_USER: elite
-      MYSQL_PASSWORD: elitepassword
     ports:
       - "3306:3306"
     volumes:
@@ -26,12 +26,12 @@ services:
       - /app/.next
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=mysql://elite:elitepassword@db:3306/elite
+      - DATABASE_URL=mysql://root:@db:3306/elite
       - JWT_SECRET=dev-secret-key-change-in-production
       - NEXT_TELEMETRY_DISABLED=1
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
-    command: sh -c "until nc -z db 3306; do echo 'Waiting for MySQL...'; sleep 2; done && npx prisma generate && npx prisma db push && npm run db:seed && npm run dev"
+    command: sh -c "until nc -z db 3306; do echo 'Waiting for MySQL...'; sleep 2; done && npx prisma generate && npx prisma db push --accept-data-loss && npm run db:seed && npm run dev"
     stdin_open: true
     tty: true
     restart: unless-stopped

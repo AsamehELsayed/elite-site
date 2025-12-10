@@ -13,6 +13,8 @@ import { Orbit, Quote } from "lucide-react"
 import LiquidEther from "./LiquidEther"
 import { LaserFlow } from "@/components/leserflow"
 import Galaxy from "./star"
+import { useLocale } from "@/components/locale-provider"
+import { cn } from "@/lib/utils"
 
 // Default fallback data
 const defaultTestimonials = [
@@ -46,6 +48,7 @@ const cardEntrance = {
 }
 
 export function TestimonialsSection() {
+  const { locale, t } = useLocale()
   const [index, setIndex] = useState(0)
   const [testimonials, setTestimonials] = useState(defaultTestimonials)
   const [stats, setStats] = useState(defaultStats)
@@ -59,8 +62,8 @@ export function TestimonialsSection() {
     const fetchData = async () => {
       try {
         const [testimonialsRes, statsRes] = await Promise.all([
-          fetch('/api/testimonials'),
-          fetch('/api/stats')
+          fetch(`/api/testimonials?lang=${locale}`),
+          fetch(`/api/stats?lang=${locale}`)
         ])
         
         if (testimonialsRes.ok) {
@@ -90,9 +93,10 @@ export function TestimonialsSection() {
     }
     
     fetchData()
-  }, [])
+  }, [locale])
 
   const activeTestimonial = useMemo(() => testimonials[index] || testimonials[0], [index, testimonials])
+  const activeQuoteHtml = activeTestimonial?.quote || ""
 
   useEffect(() => {
     const timer = setInterval(
@@ -143,7 +147,7 @@ export function TestimonialsSection() {
   return (
     <section
       id="testimonials"
-      className="relative flex h-full max-h-screen w-full items-center bg-black py-12 md:py-20 lg:py-24 text-white"
+      className="relative flex min-h-screen w-full items-center bg-black py-12 md:py-20 lg:py-24 text-white"
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 z-0">
@@ -203,10 +207,10 @@ export function TestimonialsSection() {
     
       </div>
 
-      <div className="relative z-10 h-full w-full ">
-        <div className="container mx-auto grid gap-16 px-4 md:px-8 lg:grid-cols-[0.85fr_1.15fr] xl:px-12 py-4 md:py-6 lg:py-8">
-        <div className="space-y-12">
-          <div className="space-y-6">
+      <div className="relative z-10 w-full">
+        <div className="container mx-auto grid gap-8 sm:gap-12 md:gap-16 px-4 sm:px-6 md:px-8 lg:grid-cols-[0.85fr_1.15fr] xl:px-12 py-4 sm:py-6 md:py-8">
+        <div className="space-y-8 sm:space-y-10 md:space-y-12">
+          <div className="space-y-4 sm:space-y-6">
             <motion.div
               className="inline-flex items-center gap-3 rounded-full border border-white/10 px-5 py-2 text-xs uppercase tracking-[0.4em] text-zinc-400"
               initial={{ opacity: 0, y: -10 }}
@@ -215,38 +219,36 @@ export function TestimonialsSection() {
               transition={{ duration: 0.6 }}
             >
               <span className="h-1 w-8 rounded-full bg-primary" />
-              verified awe
+              {t('testimonials.badge')}
             </motion.div>
 
             <motion.h2
-              className="max-w-xl text-4xl font-serif font-semibold leading-tight md:text-5xl lg:text-6xl"
+              className="max-w-xl text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-semibold leading-tight"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             >
-              Testimonial theatre engineered for high-net-worth attention spans.
+              {t('testimonials.title')}
             </motion.h2>
 
-            <p className="max-w-lg text-base text-zinc-300 md:text-lg">
-              Every quote here anchors a seven-figure launch, an invite-only
-              drop, or a private beta the public never saw. We architect the
-              emotion, the timing, and the conversion paths with obsessive craft.
+            <p className="max-w-lg text-sm sm:text-base md:text-lg text-zinc-300">
+              {t('testimonials.description')}
             </p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-3">
+          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-3">
             {stats.map((stat) => (
               <motion.div
                 key={stat.label}
-                className="card-enhanced rounded-3xl border border-white/15 bg-white/8 p-5 backdrop-blur-sm hover:bg-white/10 hover:border-primary/30 transition-all duration-300"
+                className="card-enhanced rounded-2xl sm:rounded-3xl border border-white/15 bg-white/8 p-4 sm:p-5 backdrop-blur-sm hover:bg-white/10 hover:border-primary/30 transition-all duration-300"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
               >
-                <p className="text-2xl font-serif text-white mb-2">{stat.value}</p>
-                <p className="text-xs uppercase tracking-[0.3em] text-zinc-400 leading-relaxed">
+                <p className="text-xl sm:text-2xl font-serif text-white mb-1 sm:mb-2">{stat.value}</p>
+                <p className="text-[10px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.3em] text-zinc-400 leading-relaxed">
                   {stat.label}
                 </p>
               </motion.div>
@@ -261,12 +263,12 @@ export function TestimonialsSection() {
           onMouseLeave={resetMouse}
         >
           <motion.div
-            className="absolute inset-0 rounded-[40px] "
+            className={cn("absolute inset-0 rounded-[40px]")}
             style={{ translateX: parallaxX, translateY: parallaxY }}
           />
 
           <motion.div
-            className="card-enhanced relative overflow-hidden rounded-[40px] border border-white/15 bg-white/8 p-10 backdrop-blur-2xl shadow-[0_50px_120px_rgba(0,0,0,0.4)] hover:bg-white/10 transition-all duration-300"
+            className="card-enhanced relative overflow-hidden rounded-[24px] sm:rounded-[32px] md:rounded-[40px] border border-white/15 bg-white/8 p-6 sm:p-8 md:p-10 backdrop-blur-2xl shadow-[0_50px_120px_rgba(0,0,0,0.4)] hover:bg-white/10 transition-all duration-300"
             style={{
               translateX: parallaxX,
               translateY: parallaxY,
@@ -280,53 +282,52 @@ export function TestimonialsSection() {
               style={{ backgroundImage: gloss }}
             />
 
-            <div className="relative flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-[0.5em] text-zinc-500">
-                  featured client
+            <div className="relative flex items-start sm:items-center justify-between gap-3 sm:gap-4">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] sm:text-xs uppercase tracking-[0.4em] sm:tracking-[0.5em] text-zinc-500">
+                  {t('testimonials.featuredClient')}
                 </p>
-                <h3 className="text-3xl font-serif text-white">
+                <h3 className="text-2xl sm:text-3xl font-serif text-white truncate">
                   {activeTestimonial.author}
                 </h3>
-                <p className="text-sm uppercase tracking-[0.4em] text-primary">
+                <p className="text-xs sm:text-sm uppercase tracking-[0.3em] sm:tracking-[0.4em] text-primary">
                   {activeTestimonial.city}
                 </p>
               </div>
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary backdrop-blur-sm">
-                <Orbit className="h-7 w-7" />
+              <div className="flex h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 items-center justify-center rounded-xl sm:rounded-2xl border border-primary/30 bg-primary/10 text-primary backdrop-blur-sm flex-shrink-0">
+                <Orbit className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7" />
               </div>
             </div>
 
-            <div className="relative mt-10">
-              <Quote className="mb-4 h-10 w-10 text-primary opacity-80" />
+            <div className="relative mt-6 sm:mt-8 md:mt-10">
+              <Quote className="mb-3 sm:mb-4 h-8 w-8 sm:h-10 sm:w-10 text-primary opacity-80" />
               <AnimatePresence mode="wait">
-                <motion.p
-                  key={activeTestimonial.quote}
-                  className="text-xl leading-relaxed text-white md:text-2xl font-light"
+                <motion.div
+                  key={activeQuoteHtml}
+                  className="prose prose-invert max-w-none text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed text-white font-light"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.5, ease: "easeOut" }}
-                >
-                  "{activeTestimonial.quote}"
-                </motion.p>
+                  dangerouslySetInnerHTML={{ __html: activeQuoteHtml }}
+                />
               </AnimatePresence>
             </div>
 
-            <div className="relative mt-10 flex flex-wrap items-center gap-6">
+            <div className="relative mt-6 sm:mt-8 md:mt-10 flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-4 sm:gap-6">
               <div>
-                <p className="text-lg font-serif text-white">
+                <p className="text-base sm:text-lg font-serif text-white">
                   {activeTestimonial.role}
                 </p>
-                <p className="text-xs uppercase tracking-[0.4em] text-zinc-500">
-                  speaking on elite
+                <p className="text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.4em] text-zinc-500">
+                  {t('testimonials.speakingOn')}
                 </p>
               </div>
-              <div className="flex flex-1 flex-wrap gap-3">
+              <div className="flex flex-1 flex-wrap gap-2 sm:gap-3">
                 {activeTestimonial.metrics.map((metric) => (
                   <span
                     key={metric}
-                    className="rounded-full border border-primary/50 bg-primary/10 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white backdrop-blur-sm hover:bg-primary/15 hover:border-primary/70 transition-all duration-300"
+                    className="rounded-full border border-primary/50 bg-primary/10 px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.3em] text-white backdrop-blur-sm hover:bg-primary/15 hover:border-primary/70 transition-all duration-300"
                   >
                     {metric}
                   </span>
@@ -335,19 +336,19 @@ export function TestimonialsSection() {
             </div>
           </motion.div>
 
-          <div className="mt-6 flex flex-wrap gap-4">
+          <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4">
             {testimonials.map((item, itemIndex) => (
               <button
-                key={item.author}
+                key={item.id || `${item.author}-${item.city}-${itemIndex}`}
                 onClick={() => setIndex(itemIndex)}
-                className={`flex-1 rounded-2xl border px-4 py-4 text-left transition-all duration-300 ${
+                className={`flex-1 rounded-xl sm:rounded-2xl border px-3 sm:px-4 py-3 sm:py-4 text-left transition-all duration-300 min-h-[64px] sm:min-h-auto ${
                   itemIndex === index
                     ? "border-primary bg-primary/15 text-white shadow-lg shadow-primary/20"
                     : "border-white/20 bg-white/8 text-zinc-300 hover:border-primary/50 hover:bg-white/10"
                 }`}
               >
-                <p className="text-xs uppercase tracking-[0.4em]">{item.city}</p>
-                <p className="mt-1 font-serif text-lg">{item.author}</p>
+                <p className="text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.4em]">{item.city}</p>
+                <p className="mt-0.5 sm:mt-1 font-serif text-base sm:text-lg truncate">{item.author}</p>
               </button>
             ))}
           </div>

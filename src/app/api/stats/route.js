@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server'
 import { statService } from '@/services/statService'
 import { requireAdmin } from '@/lib/auth'
+import { defaultLocale, isLocaleSupported } from '@/lib/i18n'
 
 // Public: Guest users can view stats
-export async function GET() {
+export async function GET(request) {
   try {
-    const stats = await statService.getAll()
+    const lang = request.nextUrl.searchParams.get('lang')
+    const locale = isLocaleSupported(lang) ? lang : defaultLocale
+    const stats = await statService.getAll(locale)
     return NextResponse.json(stats)
   } catch (error) {
     return NextResponse.json(
@@ -25,7 +28,9 @@ export async function POST(request) {
 
   try {
     const body = await request.json()
-    const stat = await statService.create(body)
+    const lang = request.nextUrl.searchParams.get('lang')
+    const locale = isLocaleSupported(lang) ? lang : defaultLocale
+    const stat = await statService.create(body, locale)
     return NextResponse.json(stat, { status: 201 })
   } catch (error) {
     return NextResponse.json(

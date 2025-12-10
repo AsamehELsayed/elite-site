@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -22,12 +22,13 @@ model User {
 
 model Testimonial {
   id        String   @id @default(cuid())
-  quote     String   
+  quote     String   @db.LongText
   author    String
   role      String
   city      String
   metrics   String   // JSON array stored as string
   order     Int      @default(0)
+  translations Json? // { ar: { quote, author, role, city, metrics } }
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -35,12 +36,14 @@ model Testimonial {
 model CaseStudy {
   id          String   @id @default(cuid())
   title       String
+  slug        String?  @unique
   category    String
   image       String
   year        String
-  description String   
+  description String   @db.LongText
   link        String?
   order       Int      @default(0)
+  translations Json? // { ar: { title, category, description, link } }
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -48,7 +51,8 @@ model CaseStudy {
 model Philosophy {
   id        String   @id @default(cuid())
   title     String?
-  content   String    // Main philosophy text
+  content   String   @db.Text // Main philosophy text
+  translations Json? // { ar: { title, content } }
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -57,9 +61,10 @@ model Hero {
   id          String   @id @default(cuid())
   title       String?
   subtitle    String?
-  description String?  
+  description String?  @db.LongText
   ctaText     String?
   ctaLink     String?
+  translations Json? // { ar: { title, subtitle, description, ctaText, ctaLink } }
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -69,6 +74,7 @@ model Stat {
   label     String
   value     String
   order     Int      @default(0)
+  translations Json? // { ar: { label, value } }
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -87,6 +93,7 @@ model ContactBooking {
   preferredDate  String?
   preferredTime  String?
   order          Int      @default(0)
+  translations Json? // { ar: { day, date, slots, name, email, phone, message, preferredDate, preferredTime } }
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
@@ -105,8 +112,116 @@ model Visual {
   section5Title      String?  // "We Turn Your Vision Into"
   section5Highlight  String?  // "Stunning Reality 😎"
   // Gallery images (JSON arrays)
-  gallery1Images    String?  // JSON array of {src, skew}
-  gallery2Images    String?  // JSON array of {src}
+  gallery1Images    String?  @db.LongText // JSON array of {src, skew}
+  gallery2Images    String?  @db.LongText // JSON array of {src}
+  translations Json? // { ar: { section1Title, section1Highlight, ... , gallery1Images, gallery2Images } }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Log {
+  id        String   @id @default(cuid())
+  level     String   // info, warn, error, debug
+  message   String
+  context   String?  // JSON string for additional context
+  userId    String?  // Optional user ID if log is user-related
+  ipAddress String?  // Optional IP address
+  userAgent String?  // Optional user agent
+  stack     String?  // Error stack trace
+  createdAt DateTime @default(now())
+}
+
+model Header {
+  id            String   @id @default(cuid())
+  // Company branding
+  companyName   String   @default("ELITE.")
+  // Navigation
+  navLinks      String   // JSON array of {name, href}
+  // Services menu
+  serviceLinks  String   // JSON array of service names
+  // Contact info
+  phone         String?
+  email         String?
+  // Social media
+  socialLinks   String   // JSON array of {platform, url}
+  // Gallery images
+  galleryImages String   @db.LongText // JSON array of {src, caption}
+  // Since year
+  sinceYear     String   @default("20")
+  // Footer text
+  footerText    String   @default("Market Reference")
+  translations Json? // { ar: { companyName, navLinks, serviceLinks, phone, email, socialLinks, galleryImages, sinceYear, footerText } }
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Services {
+  id            String   @id @default(cuid())
+  // Section titles
+  sectionTitle  String   @default("Comprehensive Solutions")
+  sectionSubtitle String @default("Our Expertise")
+  // Services list
+  services      String   @db.LongText // JSON array of {id, title, description, icon}
+  translations Json? // { ar: { sectionTitle, sectionSubtitle, services } }
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Contact {
+  id            String   @id @default(cuid())
+  // Section content
+  sectionTitle  String   @default("Reserve a calendar slot with our leadership team")
+  sectionDescription String? @db.LongText
+  // Briefing steps
+  briefingSteps String   @db.LongText // JSON array of {title, detail}
+  // Session focus points
+  sessionFocus  String   @db.LongText // JSON array of focus points
+  // Booking configuration
+  bookingEmail  String   @default("studio@elite.com")
+  // Booking slots (JSON array of weeks/days/slots)
+  bookingSlots  String   @db.LongText // JSON for booking week data
+  translations Json? // { ar: { sectionTitle, sectionDescription, briefingSteps, sessionFocus, bookingEmail, bookingSlots } }
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Footer {
+  id            String   @id @default(cuid())
+  // Company info
+  companyName   String   @default("ELITE.")
+  companyDescription String? @db.LongText
+  // Social links
+  socialLinks   String   @db.LongText // JSON array of {icon, href, label}
+  // Footer links
+  servicesLinks String   @db.LongText // JSON array of service names
+  companyLinks  String   @db.LongText // JSON array of company page names
+  // Newsletter
+  newsletterTitle String @default("Newsletter")
+  newsletterDescription String? @db.LongText
+  // Legal
+  copyrightText String   @default("© 2025 Elite Agency. All rights reserved.")
+  privacyPolicyLink String?
+  termsOfServiceLink String?
+  translations Json? // { ar: { companyName, companyDescription, socialLinks, servicesLinks, companyLinks, newsletterTitle, newsletterDescription, copyrightText, privacyPolicyLink, termsOfServiceLink } }
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Legal {
+  id             String   @id @default(cuid())
+  privacyTitle   String?  @default("Privacy Policy")
+  privacyContent String?  @db.LongText
+  termsTitle     String?  @default("Terms & Conditions")
+  termsContent   String?  @db.LongText
+  translations   Json?    // { ar: { privacyTitle, privacyContent, termsTitle, termsContent } }
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Newsletter {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  status    String   @default("active") // active, unsubscribed
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

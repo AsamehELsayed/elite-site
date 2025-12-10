@@ -12,18 +12,18 @@ const fs = require('fs')
 
 // Check if DATABASE_URL is set
 if (!process.env.DATABASE_URL) {
-  // Check if we're using SQLite by reading the schema
   const schemaPath = path.join(__dirname, '..', 'prisma', 'schema.prisma')
   const schema = fs.readFileSync(schemaPath, 'utf8')
-  
+
   if (schema.includes('provider = "sqlite"')) {
     // Set default SQLite database path
     process.env.DATABASE_URL = 'file:./dev.db'
     console.log('💡 DATABASE_URL not set, using default: file:./dev.db')
   } else {
-    console.error('❌ Error: DATABASE_URL environment variable is required')
-    console.error('   Please set DATABASE_URL in your .env file')
-    process.exit(1)
+    // Default to MySQL for non-SQLite schemas to keep MySQL in dev by default
+    const fallback = 'mysql://root:@localhost:3306/elite'
+    process.env.DATABASE_URL = fallback
+    console.log(`💡 DATABASE_URL not set, using default MySQL: ${fallback}`)
   }
 }
 

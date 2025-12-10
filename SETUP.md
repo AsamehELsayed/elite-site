@@ -35,7 +35,7 @@ Create a `.env` file in the root directory:
 
 ```env
 # Local MySQL example
-DATABASE_URL="mysql://elite:elitepassword@localhost:3306/elite"
+DATABASE_URL="mysql://root:@localhost:3306/elite"
 JWT_SECRET="your-secret-key-change-this-in-production"
 NODE_ENV="development"
 ```
@@ -137,5 +137,5 @@ Models:
 
 - **Routes** (`src/app/api/*/route.js`) - Handle HTTP requests/responses only
 - **Services** (`src/services/*Service.js`) - Contain all business logic
-- **Database** - Prisma ORM with SQLite (easily switchable to PostgreSQL/MySQL)
+- **Database** - Prisma ORM with MySQL (easily switchable to PostgreSQL/SQLite)
 

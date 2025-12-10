@@ -222,9 +222,13 @@ NODE_ENV="development"
 
 ### .env (MySQL - Production)
 ```env
-DATABASE_URL="mysql://elite:password@localhost:3306/elite"
+DATABASE_URL="mysql://root:@localhost:3306/elite"
 JWT_SECRET="your-production-secret-key"
 NODE_ENV="production"
 DOCKER_ENV="true"
 ```
+
+
+
+
 

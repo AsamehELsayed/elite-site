@@ -212,3 +212,10 @@ Created comprehensive documentation:
 
 **Every line is now controlled** - guests can only view public content and submit contact forms, while admins have full CRUD access through authenticated routes.
 
+
+
+
+
+
+
+

@@ -1,0 +1,311 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "portfolio": "Portfolio",
+    "contact": "Contact Us",
+    "toggle": "AR / EN"
+  },
+  "hero": {
+    "title": "ELITE!",
+    "subtitle": "DIGITAL AGENCY",
+    "description": "Where data meets desire. We build digital experiences that breathe life into brands and captivate audiences.",
+    "cta": "Start Project"
+  },
+  "header": {
+    "ourServices": "Our Services",
+    "contact": "Contact",
+    "callUs": "Call us",
+    "email": "Email",
+    "since": "Since",
+    "defaultServices": {
+      "webDevelopment": "Web Development",
+      "mobileApp": "Mobile App",
+      "branding": "Branding",
+      "socialMedia": "Social Media Management",
+      "googleAdword": "Google Adword",
+      "mediaProduction": "Media Production"
+    },
+    "defaultGallery": {
+      "creativeStudio": "Creative Studio",
+      "digitalLab": "Digital Lab",
+      "brandSession": "Brand Session",
+      "campaignHub": "Campaign Hub"
+    }
+  },
+  "footer": {
+    "services": "Services",
+    "company": "Company",
+    "newsletter": "Newsletter",
+    "subscribe": "Subscribe",
+    "subscribing": "Subscribing...",
+    "subscribeSuccess": "Successfully subscribed!",
+    "subscribeError": "Failed to subscribe. Please try again.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "testimonials": {
+    "badge": "verified awe",
+    "title": "Testimonial theatre engineered for high-net-worth attention spans.",
+    "description": "Every quote here anchors a seven-figure launch, an invite-only drop, or a private beta the public never saw. We architect the emotion, the timing, and the conversion paths with obsessive craft.",
+    "featuredClient": "featured client",
+    "speakingOn": "speaking on elite"
+  },
+  "caseStudies": {
+    "portfolio": "Portfolio",
+    "selected": "Selecdted",
+    "works": "Works"
+  },
+  "serviceDetail": {
+    "notFoundTitle": "Service Not Found",
+    "backToServices": "Back to Services",
+    "back": "Back",
+    "startProject": "Start Your Project",
+    "viewCaseStudies": "View Case Studies",
+    "fallbackExtendedDescription": "Comprehensive digital solutions tailored to your business needs.",
+    "defaultServices": {
+      "01": {
+        "title": "Brand Identity",
+        "description": "Crafting visual systems that speak without words.",
+        "icon": "Palette"
+      },
+      "02": {
+        "title": "Digital Experience",
+        "description": "Immersive web and mobile solutions for the modern age.",
+        "icon": "Globe"
+      },
+      "03": {
+        "title": "Content Strategy",
+        "description": "Narratives that engage, convert, and retain.",
+        "icon": "FileText"
+      },
+      "04": {
+        "title": "Growth Marketing",
+        "description": "Data-driven campaigns for scalable success.",
+        "icon": "TrendingUp"
+      }
+    },
+    "extendedDescriptions": {
+      "01": "We believe that great brand identity goes beyond just a logo. It's about creating a cohesive visual language that resonates with your audience and communicates your values instantly. Our comprehensive approach includes logo design, color palette development, typography systems, and brand guidelines that ensure consistency across all touchpoints.",
+      "02": "In today's digital landscape, user experience is paramount. We craft immersive web and mobile experiences that not only look stunning but also drive conversions and user engagement. From responsive design to intuitive navigation, every pixel is thoughtfully considered to create seamless interactions.",
+      "03": "Content is the bridge between your brand and your audience. We develop strategic content frameworks that tell your story authentically and compellingly. Our approach combines data-driven insights with creative storytelling to produce content that engages, converts, and builds lasting relationships.",
+      "04": "Growth doesn't happen by accident. We combine data analytics, market research, and creative marketing strategies to drive measurable results. Our growth marketing services encompass everything from SEO and PPC campaigns to social media marketing and conversion rate optimization."
+    },
+    "features": {
+      "01": [
+        "Logo Design & Identity Systems",
+        "Brand Strategy & Positioning",
+        "Visual Identity Guidelines",
+        "Marketing Collateral Design",
+        "Brand Asset Development",
+        "Typography & Color Systems"
+      ],
+      "02": [
+        "Responsive Web Design",
+        "Mobile App Development",
+        "UI/UX Design & Research",
+        "Interactive Prototyping",
+        "Performance Optimization",
+        "Cross-platform Compatibility"
+      ],
+      "03": [
+        "Content Strategy Development",
+        "Brand Storytelling",
+        "Copywriting & Messaging",
+        "Content Management Systems",
+        "SEO-Optimized Content",
+        "Multichannel Content Creation"
+      ],
+      "04": [
+        "Digital Marketing Campaigns",
+        "SEO & SEM Services",
+        "Social Media Marketing",
+        "Conversion Rate Optimization",
+        "Analytics & Reporting",
+        "Market Research & Insights"
+      ]
+    },
+    "process": {
+      "01": [
+        {
+          "step": "01",
+          "title": "Discovery",
+          "description": "Understanding your brand vision, values, and target audience through in-depth research and strategy sessions."
+        },
+        {
+          "step": "02",
+          "title": "Concept Development",
+          "description": "Creating initial design concepts and exploring different visual directions for your brand identity."
+        },
+        {
+          "step": "03",
+          "title": "Refinement",
+          "description": "Iterating on designs based on feedback and ensuring alignment with your brand objectives."
+        },
+        {
+          "step": "04",
+          "title": "Implementation",
+          "description": "Developing comprehensive brand guidelines and preparing all necessary brand assets."
+        }
+      ],
+      "02": [
+        {
+          "step": "01",
+          "title": "Research & Planning",
+          "description": "User research, competitive analysis, and technical requirements gathering."
+        },
+        {
+          "step": "02",
+          "title": "Design & Prototyping",
+          "description": "Creating wireframes, mockups, and interactive prototypes for user validation."
+        },
+        {
+          "step": "03",
+          "title": "Development",
+          "description": "Building responsive, performant digital experiences with modern technologies."
+        },
+        {
+          "step": "04",
+          "title": "Testing & Launch",
+          "description": "Comprehensive testing, optimization, and smooth deployment of your digital product."
+        }
+      ],
+      "03": [
+        {
+          "step": "01",
+          "title": "Strategy Development",
+          "description": "Defining content goals, target audience analysis, and content strategy planning."
+        },
+        {
+          "step": "02",
+          "title": "Content Creation",
+          "description": "Developing compelling narratives and creating content across multiple channels."
+        },
+        {
+          "step": "03",
+          "title": "Optimization",
+          "description": "SEO optimization, performance monitoring, and content refinement."
+        },
+        {
+          "step": "04",
+          "title": "Measurement",
+          "description": "Tracking engagement metrics and refining strategy based on data insights."
+        }
+      ],
+      "04": [
+        {
+          "step": "01",
+          "title": "Analysis & Strategy",
+          "description": "Market research, competitor analysis, and comprehensive growth strategy development."
+        },
+        {
+          "step": "02",
+          "title": "Campaign Creation",
+          "description": "Designing and implementing multi-channel marketing campaigns."
+        },
+        {
+          "step": "03",
+          "title": "Optimization",
+          "description": "Real-time campaign monitoring and performance optimization."
+        },
+        {
+          "step": "04",
+          "title": "Reporting & Scaling",
+          "description": "Detailed analytics reporting and strategic scaling recommendations."
+        }
+      ]
+    },
+    "caseStudies": {
+      "01": [
+        {
+          "title": "Tech Startup Rebrand",
+          "category": "Brand Identity",
+          "image": "/uploads/placeholder.jpg"
+        },
+        {
+          "title": "Luxury Fashion Brand",
+          "category": "Visual Identity",
+          "image": "/uploads/placeholder.jpg"
+        },
+        {
+          "title": "Healthcare Platform",
+          "category": "Digital Brand",
+          "image": "/uploads/placeholder.jpg"
+        }
+      ],
+      "02": [
+        {
+          "title": "E-commerce Platform",
+          "category": "Web Development",
+          "image": "/uploads/placeholder.jpg"
+        },
+        {
+          "title": "SaaS Dashboard",
+          "category": "UX/UI Design",
+          "image": "/uploads/placeholder.jpg"
+        },
+        {
+          "title": "Mobile Banking App",
+          "category": "Mobile Development",
+          "image": "/uploads/placeholder.jpg"
+        }
+      ],
+      "03": [
+        {
+          "title": "B2B Content Strategy",
+          "category": "Content Marketing",
+          "image": "/uploads/placeholder.jpg"
+        },
+        {
+          "title": "Brand Storytelling Campaign",
+          "category": "Content Creation",
+          "image": "/uploads/placeholder.jpg"
+        },
+        {
+          "title": "SEO Content Optimization",
+          "category": "Digital Content",
+          "image": "/uploads/placeholder.jpg"
+        }
+      ],
+      "04": [
+        {
+          "title": "Lead Generation Campaign",
+          "category": "Digital Marketing",
+          "image": "/uploads/placeholder.jpg"
+        },
+        {
+          "title": "E-commerce Growth",
+          "category": "Performance Marketing",
+          "image": "/uploads/placeholder.jpg"
+        },
+        {
+          "title": "Brand Awareness Campaign",
+          "category": "Social Media",
+          "image": "/uploads/placeholder.jpg"
+        }
+      ]
+    }
+  },
+  "contact": {
+    "studioSessions": "Studio sessions",
+    "sessionFocus": "Session focus",
+    "calendar": "Calendar",
+    "timesNote": "All times shown in EST · 45-minute sessions",
+    "availableSlots": "Available slots",
+    "selected": "Selected",
+    "timezone": "EST",
+    "calendarInvite": "We'll send a calendar invite with a secure video room.",
+    "confirmAppointment": "Confirm appointment",
+    "emailNote": "If none of these windows work, email {email} and we'll coordinate manually.",
+    "days": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri"
+    }
+  },
+  "common": {
+    "loading": "Loading..."
+  }
+}

@@ -3,23 +3,28 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { 
-  Home, 
-  BookOpen, 
-  MessageSquare, 
-  Briefcase, 
+import {
+  Home,
+  BookOpen,
+  MessageSquare,
+  Briefcase,
   BarChart3,
   Calendar,
   LogOut,
-  Image as ImageIcon
+  Image as ImageIcon,
+  FileText,
+  AlertCircle
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import { RichTextEditor } from '@/components/ui/rich-text-editor'
 import { apiPut } from '@/lib/api'
+import { navigationItems } from '@/lib/navigation'
+import { useLocale } from '@/components/locale-provider'
 
 export default function PhilosophyPage() {
   const router = useRouter()
+  const { locale, setLocale } = useLocale()
   const [philosophy, setPhilosophy] = useState(null)
   const [loading, setLoading] = useState(true)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -29,15 +34,7 @@ export default function PhilosophyPage() {
   })
   const [saving, setSaving] = useState(false)
 
-  const menuItems = [
-    { icon: Home, label: 'Hero Section', href: '/dashboard/hero' },
-    { icon: BookOpen, label: 'Philosophy', href: '/dashboard/philosophy' },
-    { icon: ImageIcon, label: 'Visuals', href: '/dashboard/visuals' },
-    { icon: MessageSquare, label: 'Testimonials', href: '/dashboard/testimonials' },
-    { icon: Briefcase, label: 'Case Studies', href: '/dashboard/case-studies' },
-    { icon: BarChart3, label: 'Stats', href: '/dashboard/stats' },
-    { icon: Calendar, label: 'Contact Bookings', href: '/dashboard/contact-bookings' },
-  ]
+  const menuItems = navigationItems
 
   const handleLogout = () => {
     localStorage.removeItem('token')
@@ -52,11 +49,11 @@ export default function PhilosophyPage() {
     }
     setIsAuthenticated(true)
     fetchPhilosophy()
-  }, [router])
+  }, [router, locale])
 
   const fetchPhilosophy = async () => {
     try {
-      const response = await fetch('/api/philosophy')
+      const response = await fetch(`/api/philosophy?lang=${locale}`)
       const data = await response.json()
       if (data && !data.error) {
         setPhilosophy(data)
@@ -76,7 +73,7 @@ export default function PhilosophyPage() {
     e.preventDefault()
     setSaving(true)
     try {
-      const data = await apiPut('/api/philosophy', formData)
+      const data = await apiPut(`/api/philosophy?lang=${locale}`, formData)
       setPhilosophy(data)
       alert('Philosophy updated successfully!')
     } catch (error) {
@@ -143,7 +140,22 @@ export default function PhilosophyPage() {
         {/* Main Content */}
         <main className="flex-1 p-8">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-4xl font-serif mb-8">Philosophy</h1>
+            <div className="flex items-center justify-between mb-8">
+              <h1 className="text-4xl font-serif">Philosophy</h1>
+              <div className="flex gap-2">
+                {['en', 'ar'].map((lng) => (
+                  <Button
+                    key={lng}
+                    type="button"
+                    variant={locale === lng ? 'default' : 'outline'}
+                    className={locale === lng ? 'bg-primary text-black' : 'border-zinc-700 text-zinc-300'}
+                    onClick={() => setLocale(lng)}
+                  >
+                    {lng.toUpperCase()}
+                  </Button>
+                ))}
+              </div>
+            </div>
 
             <div className="bg-zinc-900 rounded-lg p-6 border border-zinc-800">
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -158,13 +170,12 @@ export default function PhilosophyPage() {
             </div>
             <div>
               <label className="block text-sm mb-2">Content</label>
-              <Textarea
+              <RichTextEditor
                 value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                className="bg-zinc-800 border-zinc-700"
-                rows={12}
-                placeholder="Philosophy content..."
-                required
+                onChange={(content) => setFormData({ ...formData, content })}
+                className="bg-zinc-900/60"
+                placeholder="Philosophy content... (rich text supported)"
+                minHeight={200}
               />
             </div>
             <Button 

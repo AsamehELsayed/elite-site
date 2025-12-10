@@ -61,7 +61,7 @@ The app uses **MySQL** in Docker:
 - Image: `mysql:8.0`
 - Hostname inside Docker: `db`
 - Default connection string (in `docker-compose.yml`):
-  - `DATABASE_URL=mysql://elite:elitepassword@db:3306/elite`
+  - `DATABASE_URL=mysql://root:@db:3306/elite`
 
 Data is persisted in the `mysql_data` Docker volume, so it survives container restarts.
 
@@ -99,8 +99,7 @@ ports:
 ### Database issues
 If you need to reset the database:
 ```bash
-docker-compose exec app rm prisma/dev.db
-docker-compose exec app npx prisma db push
+docker-compose exec app npm run db:reset
 docker-compose exec app npm run db:seed
 ```
 

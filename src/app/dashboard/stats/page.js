@@ -3,44 +3,43 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Home, 
-  BookOpen, 
-  MessageSquare, 
-  Briefcase, 
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Home,
+  BookOpen,
+  MessageSquare,
+  Briefcase,
   BarChart3,
   Calendar,
   LogOut,
-  Image as ImageIcon
+  Image as ImageIcon,
+  FileText,
+  AlertCircle
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api'
+import { navigationItems } from '@/lib/navigation'
+import { useLocale } from '@/components/locale-provider'
+
+const getEmptyForm = () => ({
+  label: '',
+  value: '',
+  order: 0
+})
 
 export default function StatsPage() {
   const router = useRouter()
+  const { locale, setLocale } = useLocale()
   const [stats, setStats] = useState([])
   const [loading, setLoading] = useState(true)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [editing, setEditing] = useState(null)
-  const [formData, setFormData] = useState({
-    label: '',
-    value: '',
-    order: 0
-  })
+  const [formData, setFormData] = useState(getEmptyForm())
 
-  const menuItems = [
-    { icon: Home, label: 'Hero Section', href: '/dashboard/hero' },
-    { icon: BookOpen, label: 'Philosophy', href: '/dashboard/philosophy' },
-    { icon: ImageIcon, label: 'Visuals', href: '/dashboard/visuals' },
-    { icon: MessageSquare, label: 'Testimonials', href: '/dashboard/testimonials' },
-    { icon: Briefcase, label: 'Case Studies', href: '/dashboard/case-studies' },
-    { icon: BarChart3, label: 'Stats', href: '/dashboard/stats' },
-    { icon: Calendar, label: 'Contact Bookings', href: '/dashboard/contact-bookings' },
-  ]
+  const menuItems = navigationItems
 
   const handleLogout = () => {
     localStorage.removeItem('token')
@@ -55,11 +54,32 @@ export default function StatsPage() {
     }
     setIsAuthenticated(true)
     fetchStats()
-  }, [router])
+  }, [router, locale])
+
+  useEffect(() => {
+    // Keep form values aligned with the selected locale to prevent overwriting other languages
+    if (!editing) {
+      setFormData(getEmptyForm())
+      return
+    }
+
+    const current = stats.find((item) => item.id === editing)
+    if (!current) {
+      setEditing(null)
+      setFormData(getEmptyForm())
+      return
+    }
+
+    setFormData({
+      label: current.label || '',
+      value: current.value || '',
+      order: current.order ?? 0
+    })
+  }, [locale, stats, editing])
 
   const fetchStats = async () => {
     try {
-      const data = await apiGet('/api/stats')
+      const data = await apiGet(`/api/stats?lang=${locale}`)
       setStats(data)
     } catch (error) {
       console.error('Failed to fetch stats:', error)
@@ -77,12 +97,12 @@ export default function StatsPage() {
       }
 
       if (editing) {
-        await apiPut(`/api/stats/${editing}`, payload)
+        await apiPut(`/api/stats/${editing}?lang=${locale}`, payload)
       } else {
-        await apiPost('/api/stats', payload)
+        await apiPost(`/api/stats?lang=${locale}`, payload)
       }
 
-      setFormData({ label: '', value: '', order: 0 })
+      setFormData(getEmptyForm())
       setEditing(null)
       fetchStats()
     } catch (error) {
@@ -167,12 +187,25 @@ export default function StatsPage() {
         {/* Main Content */}
         <main className="flex-1 p-8">
           <div className="max-w-6xl mx-auto">
-            <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-serif">Stats</h1>
+          <div className="flex items-center gap-2">
+            {['en', 'ar'].map((lng) => (
+              <Button
+                key={lng}
+                type="button"
+                variant={locale === lng ? 'default' : 'outline'}
+                className={locale === lng ? 'bg-primary text-black' : 'border-zinc-700 text-zinc-300'}
+                onClick={() => setLocale(lng)}
+              >
+                {lng.toUpperCase()}
+              </Button>
+            ))}
+          </div>
           <Button
             onClick={() => {
               setEditing(null)
-              setFormData({ label: '', value: '', order: 0 })
+              setFormData(getEmptyForm())
             }}
             className="bg-primary text-black"
           >

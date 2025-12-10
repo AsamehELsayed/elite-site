@@ -3,46 +3,45 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Home, 
-  BookOpen, 
-  MessageSquare, 
-  Briefcase, 
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Home,
+  BookOpen,
+  MessageSquare,
+  Briefcase,
   BarChart3,
   Calendar,
   LogOut,
-  Image as ImageIcon
+  Image as ImageIcon,
+  FileText,
+  AlertCircle
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import { RichTextEditor } from '@/components/ui/rich-text-editor'
 import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api'
+import { navigationItems } from '@/lib/navigation'
+import { useLocale } from '@/components/locale-provider'
+
+const getEmptyForm = () => ({
+  day: '',
+  date: '',
+  slots: '',
+  order: 0
+})
 
 export default function ContactBookingsPage() {
   const router = useRouter()
+  const { locale, setLocale } = useLocale()
   const [bookings, setBookings] = useState([])
   const [loading, setLoading] = useState(true)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [editing, setEditing] = useState(null)
-  const [formData, setFormData] = useState({
-    day: '',
-    date: '',
-    slots: '',
-    order: 0
-  })
+  const [formData, setFormData] = useState(getEmptyForm())
 
-  const menuItems = [
-    { icon: Home, label: 'Hero Section', href: '/dashboard/hero' },
-    { icon: BookOpen, label: 'Philosophy', href: '/dashboard/philosophy' },
-    { icon: ImageIcon, label: 'Visuals', href: '/dashboard/visuals' },
-    { icon: MessageSquare, label: 'Testimonials', href: '/dashboard/testimonials' },
-    { icon: Briefcase, label: 'Case Studies', href: '/dashboard/case-studies' },
-    { icon: BarChart3, label: 'Stats', href: '/dashboard/stats' },
-    { icon: Calendar, label: 'Contact Bookings', href: '/dashboard/contact-bookings' },
-  ]
+  const menuItems = navigationItems
 
   const handleLogout = () => {
     localStorage.removeItem('token')
@@ -57,11 +56,38 @@ export default function ContactBookingsPage() {
     }
     setIsAuthenticated(true)
     fetchBookings()
-  }, [router])
+  }, [router, locale])
+
+  useEffect(() => {
+    // Keep form values in sync with the selected locale so edits don't bleed across languages
+    if (!editing) {
+      setFormData(getEmptyForm())
+      return
+    }
+
+    const current = bookings.find((item) => item.id === editing)
+    if (!current) {
+      setEditing(null)
+      setFormData(getEmptyForm())
+      return
+    }
+
+    setFormData({
+      day: current.day || '',
+      date: current.date || '',
+      slots: Array.isArray(current.slots)
+        ? current.slots.join(', ')
+        : current.slots || '',
+      order: current.order ?? 0
+    })
+  }, [locale, bookings, editing])
+
+  const stripHtml = (value = '') =>
+    value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
 
   const fetchBookings = async () => {
     try {
-      const data = await apiGet('/api/contact-bookings')
+      const data = await apiGet(`/api/contact-bookings?lang=${locale}`)
       setBookings(data)
     } catch (error) {
       console.error('Failed to fetch contact bookings:', error)
@@ -73,7 +99,8 @@ export default function ContactBookingsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const slotsArray = formData.slots.split(',').map(s => s.trim()).filter(s => s)
+      const slotsPlain = stripHtml(formData.slots || '')
+      const slotsArray = slotsPlain.split(',').map(s => s.trim()).filter(s => s)
       const payload = {
         ...formData,
         slots: slotsArray,
@@ -81,12 +108,12 @@ export default function ContactBookingsPage() {
       }
 
       if (editing) {
-        await apiPut(`/api/contact-bookings/${editing}`, payload)
+        await apiPut(`/api/contact-bookings/${editing}?lang=${locale}`, payload)
       } else {
-        await apiPost('/api/contact-bookings', payload)
+        await apiPost(`/api/contact-bookings?lang=${locale}`, payload)
       }
 
-      setFormData({ day: '', date: '', slots: '', order: 0 })
+      setFormData(getEmptyForm())
       setEditing(null)
       fetchBookings()
     } catch (error) {
@@ -172,12 +199,25 @@ export default function ContactBookingsPage() {
         {/* Main Content */}
         <main className="flex-1 p-8">
           <div className="max-w-6xl mx-auto">
-            <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-8 gap-4">
           <h1 className="text-4xl font-serif">Contact Bookings</h1>
+          <div className="flex items-center gap-2">
+            {['en', 'ar'].map((lng) => (
+              <Button
+                key={lng}
+                type="button"
+                variant={locale === lng ? 'default' : 'outline'}
+                className={locale === lng ? 'bg-primary text-black' : 'border-zinc-700 text-zinc-300'}
+                onClick={() => setLocale(lng)}
+              >
+                {lng.toUpperCase()}
+              </Button>
+            ))}
+          </div>
           <Button
             onClick={() => {
               setEditing(null)
-              setFormData({ day: '', date: '', slots: '', order: 0 })
+              setFormData(getEmptyForm())
             }}
             className="bg-primary text-black"
           >
@@ -215,12 +255,12 @@ export default function ContactBookingsPage() {
               </div>
               <div>
                 <label className="block text-sm mb-2">Slots (comma-separated)</label>
-                <Textarea
+                <RichTextEditor
                   value={formData.slots}
-                  onChange={(e) => setFormData({ ...formData, slots: e.target.value })}
-                  className="bg-zinc-800 border-zinc-700"
-                  rows={4}
-                  placeholder="9:00 AM, 10:00 AM, 2:00 PM"
+                  onChange={(slots) => setFormData({ ...formData, slots })}
+                  className="bg-zinc-900/60"
+                  placeholder="9:00 AM, 10:00 AM, 2:00 PM (rich text supported)"
+                  minHeight={120}
                 />
               </div>
               <div>

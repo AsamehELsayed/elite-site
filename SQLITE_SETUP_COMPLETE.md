@@ -164,3 +164,10 @@ Your project now:
 
 **Just run `npm run db:push` and start coding!** 🚀
 
+
+
+
+
+
+
+

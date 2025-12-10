@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server'
 import { caseStudyService } from '@/services/caseStudyService'
 import { requireAdmin } from '@/lib/auth'
+import { defaultLocale, isLocaleSupported } from '@/lib/i18n'
 
 // Public: Guest users can view case studies
-export async function GET() {
+export async function GET(request) {
   try {
-    const caseStudies = await caseStudyService.getAll()
+    const lang = request.nextUrl.searchParams.get('lang')
+    const locale = isLocaleSupported(lang) ? lang : defaultLocale
+    const caseStudies = await caseStudyService.getAll(locale)
     return NextResponse.json(caseStudies)
   } catch (error) {
     return NextResponse.json(
@@ -25,7 +28,9 @@ export async function POST(request) {
 
   try {
     const body = await request.json()
-    const caseStudy = await caseStudyService.create(body)
+    const lang = request.nextUrl.searchParams.get('lang')
+    const locale = isLocaleSupported(lang) ? lang : defaultLocale
+    const caseStudy = await caseStudyService.create(body, locale)
     return NextResponse.json(caseStudy, { status: 201 })
   } catch (error) {
     return NextResponse.json(

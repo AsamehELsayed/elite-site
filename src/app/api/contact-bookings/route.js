@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { contactBookingService } from '@/services/contactBookingService'
 import { requireAdmin } from '@/lib/auth'
+import { defaultLocale, isLocaleSupported } from '@/lib/i18n'
 
 // Protected: Only authenticated admin can view contact bookings
 export async function GET(request) {
@@ -11,7 +12,9 @@ export async function GET(request) {
   }
 
   try {
-    const bookings = await contactBookingService.getAll()
+    const lang = request.nextUrl.searchParams.get('lang')
+    const locale = isLocaleSupported(lang) ? lang : defaultLocale
+    const bookings = await contactBookingService.getAll(locale)
     return NextResponse.json(bookings)
   } catch (error) {
     return NextResponse.json(
@@ -34,7 +37,9 @@ export async function POST(request) {
       )
     }
 
-    const booking = await contactBookingService.create(body)
+    const lang = request.nextUrl.searchParams.get('lang')
+    const locale = isLocaleSupported(lang) ? lang : defaultLocale
+    const booking = await contactBookingService.create(body, locale)
     return NextResponse.json(booking, { status: 201 })
   } catch (error) {
     return NextResponse.json(

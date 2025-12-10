@@ -1,5 +1,6 @@
 'use client'
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { mat4, quat, vec2, vec3 } from 'gl-matrix';
 import './InfiniteMenu.css';
 
@@ -80,7 +81,8 @@ void main() {
     vec2 st = vec2(vUvs.x, 1.0 - vUvs.y);
     st = (st - 0.5) * scale + 0.5;
     
-    st = clamp(st, 0.0, 1.0);
+    // Clamp with vec2 bounds to satisfy GLSL ES 3.0 type requirements
+    st = clamp(st, vec2(0.0), vec2(1.0));
     
     st = st * cellSize + cellOffset;
     
@@ -460,85 +462,75 @@ class ArcballControl {
     this._rotationVelocity = 0;
     this._combinedQuat = quat.create();
 
-    // Scroll threshold for triggering next/prev
-    const scrollThreshold = 50;
-    let accumulatedScroll = 0;
-
-    canvas.addEventListener('wheel', e => {
-      e.preventDefault();
-      
-      if (this.scrollCooldown) return;
-      
-      accumulatedScroll += e.deltaY;
-      
-      if (accumulatedScroll > scrollThreshold) {
-        // Scroll down - go to next item
-        if (this.onScrollNext) {
-          this.onScrollNext();
-        }
-        accumulatedScroll = 0;
-        this.scrollCooldown = true;
-        setTimeout(() => { this.scrollCooldown = false; }, 350);
-      } else if (accumulatedScroll < -scrollThreshold) {
-        // Scroll up - go to previous item
-        if (this.onScrollPrev) {
-          this.onScrollPrev();
-        }
-        accumulatedScroll = 0;
-        this.scrollCooldown = true;
-        setTimeout(() => { this.scrollCooldown = false; }, 350);
-      }
-      
-      // Reset accumulated scroll after a pause
-      if (this.scrollTimeout) {
-        clearTimeout(this.scrollTimeout);
-      }
-      this.scrollTimeout = setTimeout(() => {
-        accumulatedScroll = 0;
-      }, 200);
-    }, { passive: false });
-
+    // Disable default touch actions
     canvas.style.touchAction = 'none';
     
-    let lastTouchY = 0;
-    let touchAccumulated = 0;
+    // Touch/Swipe variables
+    let touchStartY = 0;
+    let touchStartX = 0;
+    let touchCurrentY = 0;
+    let touchCurrentX = 0;
+    let isSwiping = false;
+    let swipeStartTime = 0;
     
+    // Touch event handlers
     canvas.addEventListener('touchstart', e => {
       if (e.touches.length === 1) {
-        lastTouchY = e.touches[0].clientY;
-        touchAccumulated = 0;
+        touchStartY = e.touches[0].clientY;
+        touchStartX = e.touches[0].clientX;
+        touchCurrentY = touchStartY;
+        touchCurrentX = touchStartX;
+        isSwiping = true;
+        swipeStartTime = Date.now();
       }
     }, { passive: true });
     
     canvas.addEventListener('touchmove', e => {
-      if (e.touches.length === 1 && !this.scrollCooldown) {
+      if (e.touches.length === 1 && isSwiping) {
         e.preventDefault();
-        const deltaY = lastTouchY - e.touches[0].clientY;
-        touchAccumulated += deltaY;
-        lastTouchY = e.touches[0].clientY;
-        
-        const touchThreshold = 30;
-        
-        if (touchAccumulated > touchThreshold) {
-          if (this.onScrollNext) {
-            this.onScrollNext();
-          }
-          touchAccumulated = 0;
-          this.scrollCooldown = true;
-          setTimeout(() => { this.scrollCooldown = false; }, 350);
-        } else if (touchAccumulated < -touchThreshold) {
-          if (this.onScrollPrev) {
-            this.onScrollPrev();
-          }
-          touchAccumulated = 0;
-          this.scrollCooldown = true;
-          setTimeout(() => { this.scrollCooldown = false; }, 350);
-        }
+        touchCurrentY = e.touches[0].clientY;
+        touchCurrentX = e.touches[0].clientX;
       }
     }, { passive: false });
     
-    canvas.addEventListener('touchend', () => {
-      touchAccumulated = 0;
+    canvas.addEventListener('touchend', e => {
+      if (!isSwiping || this.scrollCooldown) {
+        isSwiping = false;
+        return;
+      }
+      
+      const deltaY = touchStartY - touchCurrentY;
+      const deltaX = touchStartX - touchCurrentX;
+      const swipeTime = Date.now() - swipeStartTime;
+      const absX = Math.abs(deltaX);
+      const absY = Math.abs(deltaY);
+      
+      // Detect vertical swipe (Y movement > X movement)
+      const minSwipeDistance = 50;
+      const maxSwipeTime = 1000;
+      
+      if (absY > absX && absY > minSwipeDistance && swipeTime < maxSwipeTime) {
+        if (deltaY > 0) {
+          // Swipe up - go to next item
+          if (this.onScrollNext) {
+            this.onScrollNext();
+          }
+        } else {
+          // Swipe down - go to previous item
+          if (this.onScrollPrev) {
+            this.onScrollPrev();
+          }
+        }
+        
+        this.scrollCooldown = true;
+        setTimeout(() => { this.scrollCooldown = false; }, 400);
+      }
+      
+      isSwiping = false;
+    }, { passive: true });
+    
+    canvas.addEventListener('touchcancel', () => {
+      isSwiping = false;
     }, { passive: true });
   }
   
@@ -1012,11 +1004,14 @@ const defaultItems = [
 ];
 
 export default function InfiniteMenu({ items = [] }) {
+  const router = useRouter();
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const [activeItem, setActiveItem] = useState(null);
   const [isMoving, setIsMoving] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const menuItems = useMemo(() => (items && items.length ? items : defaultItems), [items]);
+  const [isNavCooldown, setIsNavCooldown] = useState(false);
   
   const sketchRef = useRef(null);
   const currentIndexRef = useRef(0);
@@ -1027,23 +1022,69 @@ export default function InfiniteMenu({ items = [] }) {
     currentIndexRef.current = currentIndex;
   }, [currentIndex]);
 
+  const updateActiveFromSketch = (sk) => {
+    if (!sk) return;
+    const itemIndex = sk.getCurrentIndex();
+    setActiveItem(menuItems[itemIndex]);
+    setCurrentIndex(itemIndex);
+    currentIndexRef.current = itemIndex;
+  };
+
+  const navigatePrev = () => {
+    if (isNavCooldown) return;
+    const sk = sketchRef.current;
+    if (!sk) return;
+    if (!sk.navigatePrev()) {
+      // Optional: still allow section navigation if at boundary
+      const workSection = document.getElementById('work');
+      const parent = workSection?.closest('.snap-section');
+      const prevSection = parent ? parent.previousElementSibling : workSection?.parentElement?.previousElementSibling;
+      if (prevSection) {
+        setIsNavCooldown(true);
+        prevSection.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => setIsNavCooldown(false), 1000);
+      }
+      return;
+    }
+    updateActiveFromSketch(sk);
+    setIsNavCooldown(true);
+    setTimeout(() => setIsNavCooldown(false), 320);
+  };
+
+  const navigateNext = () => {
+    if (isNavCooldown) return;
+    const sk = sketchRef.current;
+    if (!sk) return;
+    if (!sk.navigateNext()) {
+      const workSection = document.getElementById('work');
+      const parent = workSection?.closest('.snap-section');
+      const nextSection = parent ? parent.nextElementSibling : workSection?.parentElement?.nextElementSibling;
+      if (nextSection) {
+        setIsNavCooldown(true);
+        nextSection.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => setIsNavCooldown(false), 1000);
+      }
+      return;
+    }
+    updateActiveFromSketch(sk);
+    setIsNavCooldown(true);
+    setTimeout(() => setIsNavCooldown(false), 320);
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
-    const totalItems = items.length || 1;
 
     // This is called by the sketch when it detects which item is in view
     const handleActiveItem = index => {
       // Update display based on sketch's current index
       const sk = sketchRef.current;
       if (sk) {
-        const itemIndex = sk.getCurrentIndex();
-      setActiveItem(items[itemIndex]);
-        setCurrentIndex(itemIndex);
+        updateActiveFromSketch(sk);
       }
     };
 
     if (canvas) {
-      sketchRef.current = new InfiniteGridMenu(canvas, items.length ? items : defaultItems, handleActiveItem, setIsMoving, sk => {
+      sketchRef.current = new InfiniteGridMenu(canvas, menuItems, handleActiveItem, setIsMoving, sk => {
         sk.run();
         
         // Set up sequential navigation callbacks
@@ -1068,10 +1109,7 @@ export default function InfiniteMenu({ items = [] }) {
               }
             } else {
               // Update display
-              const newIndex = sk.getCurrentIndex();
-              currentIndexRef.current = newIndex;
-              setCurrentIndex(newIndex);
-              setActiveItem(items[newIndex]);
+              updateActiveFromSketch(sk);
             }
           };
           
@@ -1095,17 +1133,14 @@ export default function InfiniteMenu({ items = [] }) {
               }
             } else {
               // Update display
-              const newIndex = sk.getCurrentIndex();
-              currentIndexRef.current = newIndex;
-              setCurrentIndex(newIndex);
-              setActiveItem(items[newIndex]);
+              updateActiveFromSketch(sk);
             }
           };
         }
         
         // Initialize to first item
         sk.navigateToItem(0);
-        setActiveItem(items[0]);
+        setActiveItem(menuItems[0]);
       });
     }
 
@@ -1121,15 +1156,28 @@ export default function InfiniteMenu({ items = [] }) {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [items]);
+  }, [menuItems]);
 
   const handleButtonClick = () => {
-    if (!activeItem?.link) return;
-    if (activeItem.link.startsWith('http')) {
-      window.open(activeItem.link, '_blank');
-    } else {
-      console.log('Internal route:', activeItem.link);
+    const link = activeItem?.link;
+    if (!link || link === '#') return;
+
+    const isExternal = /^(https?:\/\/|mailto:|tel:)/i.test(link);
+    if (isExternal) {
+      window.open(link, '_blank');
+      return;
     }
+
+    router.push(link);
+  };
+
+  // Prevent scroll propagation when interacting with the menu
+  const handleWheel = (e) => {
+    e.stopPropagation();
+  };
+
+  const handleTouchMove = (e) => {
+    e.stopPropagation();
   };
 
   return (
@@ -1137,6 +1185,8 @@ export default function InfiniteMenu({ items = [] }) {
       ref={containerRef}
       data-cursor="interactive"
       className="infinite-menu-container"
+      onWheel={handleWheel}
+      onTouchMove={handleTouchMove}
       style={{
         position: 'absolute',
         top: 0,
@@ -1145,7 +1195,8 @@ export default function InfiniteMenu({ items = [] }) {
         height: '100%',
         display: 'block',
         overflow: 'hidden',
-        background: '#000'
+        background: '#000',
+        touchAction: 'none'
       }}
     >
       <canvas
@@ -1155,6 +1206,23 @@ export default function InfiniteMenu({ items = [] }) {
         style={{ width: '100%', height: '100%', display: 'block', position: 'relative', zIndex: 1 }}
       />
 
+      {/* Swipe Indicators */}
+      {currentIndex > 0 && (
+        <div className="swipe-indicator top">
+          <svg viewBox="0 0 24 24">
+            <polyline points="18 15 12 9 6 15"></polyline>
+          </svg>
+        </div>
+      )}
+      
+      {currentIndex < menuItems.length - 1 && (
+        <div className="swipe-indicator bottom">
+          <svg viewBox="0 0 24 24">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+      )}
+
       {activeItem && (
         <>
           <h2 className={`face-title ${isMoving ? 'inactive' : 'active'}`}>{activeItem.title}</h2>
@@ -1163,6 +1231,28 @@ export default function InfiniteMenu({ items = [] }) {
 
           <div onClick={handleButtonClick} className={`action-button ${isMoving ? 'inactive' : 'active'}`}>
             <p className="action-button-icon">&#x2197;</p>
+          </div>
+
+          {/* Explicit navigation buttons for desktop/tablet */}
+          <div className="nav-buttons min-w-2xl flex justify-between">
+            <button
+              type="button"
+              className="nav-button"
+              onClick={navigatePrev}
+              disabled={currentIndex === 0 || isNavCooldown}
+              aria-label="Previous work"
+            >
+              ← Prev
+            </button>
+            <button
+              type="button"
+              className="nav-button"
+              onClick={navigateNext}
+              disabled={currentIndex >= menuItems.length - 1 || isNavCooldown}
+              aria-label="Next work"
+            >
+              Next →
+            </button>
           </div>
         </>
       )}

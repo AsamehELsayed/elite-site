@@ -6,12 +6,19 @@
  * Get the authentication headers with Bearer token
  * @returns {Object} Headers object with Authorization
  */
-export function getAuthHeaders() {
+export function getAuthHeaders({ includeJson = true } = {}) {
   const token = localStorage.getItem('token')
-  return {
-    'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token}` })
+  const headers = {}
+
+  if (includeJson) {
+    headers['Content-Type'] = 'application/json'
   }
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+
+  return headers
 }
 
 /**
@@ -21,7 +28,8 @@ export function getAuthHeaders() {
  * @returns {Promise<Response>} The fetch response
  */
 export async function authenticatedFetch(url, options = {}) {
-  const headers = getAuthHeaders()
+  const isFormData = options.body instanceof FormData
+  const headers = getAuthHeaders({ includeJson: !isFormData })
   
   const response = await fetch(url, {
     ...options,
@@ -41,6 +49,27 @@ export async function authenticatedFetch(url, options = {}) {
   return response
 }
 
+async function parseJsonSafe(response) {
+  const text = await response.text()
+  if (!text) return null
+
+  try {
+    return JSON.parse(text)
+  } catch (err) {
+    const snippet = text.slice(0, 200).replace(/\s+/g, ' ').trim()
+    const location = response?.url || 'request'
+    const reason =
+      snippet.startsWith('<!DOCTYPE') || snippet.startsWith('<html')
+        ? 'Received HTML instead of JSON'
+        : 'Invalid JSON response'
+
+    const wrappedError = new Error(`${reason} from ${location}`)
+    wrappedError.cause = err
+    wrappedError.responseBody = snippet
+    throw wrappedError
+  }
+}
+
 /**
  * Make an authenticated GET request
  * @param {string} url - The API endpoint URL
@@ -48,20 +77,8 @@ export async function authenticatedFetch(url, options = {}) {
  */
 export async function apiGet(url) {
   const response = await authenticatedFetch(url, { method: 'GET' })
-  
-  // Handle empty responses
-  const contentType = response.headers.get('content-type')
-  if (!contentType || !contentType.includes('application/json')) {
-    return null
-  }
-  
-  const data = await response.json()
-  
-  // Handle null or undefined data
-  if (data === null || data === undefined) {
-    return null
-  }
-  
+  const data = await parseJsonSafe(response)
+
   if (!response.ok) {
     throw new Error(data?.error || 'Request failed')
   }
@@ -79,7 +96,7 @@ export async function apiPost(url, data) {
     method: 'POST',
     body: JSON.stringify(data)
   })
-  const responseData = await response.json()
+  const responseData = await parseJsonSafe(response)
   if (!response.ok) {
     throw new Error(responseData.error || 'Request failed')
   }
@@ -97,7 +114,7 @@ export async function apiPut(url, data) {
     method: 'PUT',
     body: JSON.stringify(data)
   })
-  const responseData = await response.json()
+  const responseData = await parseJsonSafe(response)
   if (!response.ok) {
     throw new Error(responseData.error || 'Request failed')
   }
@@ -111,7 +128,7 @@ export async function apiPut(url, data) {
  */
 export async function apiDelete(url) {
   const response = await authenticatedFetch(url, { method: 'DELETE' })
-  const responseData = await response.json()
+  const responseData = await parseJsonSafe(response)
   if (!response.ok) {
     throw new Error(responseData.error || 'Request failed')
   }

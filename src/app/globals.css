@@ -123,30 +123,21 @@
   * {
     @apply border-border outline-ring/50;
   }
-  
-  html {
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    background-color: #000000;
-  }
-  
+ 
   body {
     @apply bg-background text-foreground;
-    overflow: hidden;
-    background-color: #000000;
+    overflow-x: hidden;
     color: #ffffff;
   }
   
   /* Ensure main is visible */
   main {
-    background-color: #000000;
     position: relative;
     z-index: 1;
   }
   
   /* Ensure sections are visible */
   section {
-    background-color: #000000;
     position: relative;
   }
 }
@@ -164,6 +155,7 @@
 .snap-section {
   scroll-snap-align: start;
   scroll-snap-stop: always;
+  min-height: 100vh;
   height: 100vh;
   width: 100%;
   position: relative;
@@ -175,6 +167,21 @@
   contain: layout style paint;
   transform: translateZ(0);
   will-change: scroll-position;
+}
+
+/* On mobile, allow sections to be taller if needed */
+@media (max-width: 768px) {
+  .snap-section {
+    height: auto;
+    min-height: 100vh;
+    scroll-snap-stop: normal;
+    scroll-snap-align: start;
+  }
+  
+  /* Ensure sections don't overlap */
+  .snap-section > section {
+    min-height: 100vh;
+  }
 }
 
 .snap-section-start {
@@ -196,6 +203,14 @@
   scroll-padding: 0;
   /* Performance optimization */
   contain: layout style paint;
+}
+
+/* Better section isolation to prevent overlap */
+@media (max-width: 768px) {
+  .snap-section {
+    isolation: isolate;
+    contain: layout paint;
+  }
 }
 
 /* Custom Utilities for Luxury Feel */
@@ -660,5 +675,87 @@ a, button, [role="button"], .transition-all, .hover\:transition-all, input, text
 @media (pointer: coarse) {
   .cursor-follower {
     display: none;
+  }
+}
+
+/* Mobile-specific utilities for better touch interaction */
+@layer utilities {
+  /* Minimum touch target sizes for accessibility */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .touch-target-lg {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Prevent text selection on interactive elements in mobile */
+  @media (max-width: 640px) {
+    button, a[role="button"], [data-cursor="interactive"] {
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      user-select: none;
+    }
+  }
+
+  /* Better spacing for small screens */
+  .mobile-safe-padding {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+
+  /* Smooth scrolling improvements for mobile */
+  @media (max-width: 768px) {
+    .snap-section {
+      scroll-snap-align: start;
+      scroll-snap-stop: normal;
+    }
+    
+    /* Reduce motion for better mobile performance */
+    * {
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+  }
+
+  /* Better text rendering on mobile */
+  @media (max-width: 640px) {
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+  }
+
+  /* Prevent zoom on input focus in iOS */
+  @media (max-width: 640px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"],
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
+  }
+
+  /* Better overflow handling on mobile */
+  .mobile-overflow-safe {
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Safe area insets for notched devices */
+  @supports (padding: max(0px)) {
+    .safe-top {
+      padding-top: max(1rem, env(safe-area-inset-top));
+    }
+    
+    .safe-bottom {
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
   }
 }

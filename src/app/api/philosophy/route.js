@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server'
 import { philosophyService } from '@/services/philosophyService'
 import { requireAdmin } from '@/lib/auth'
+import { defaultLocale, isLocaleSupported } from '@/lib/i18n'
 
 // Public: Guest users can view philosophy section
-export async function GET() {
+export async function GET(request) {
   try {
-    const philosophy = await philosophyService.get()
+    const lang = request.nextUrl.searchParams.get('lang')
+    const locale = isLocaleSupported(lang) ? lang : defaultLocale
+    const philosophy = await philosophyService.get(locale)
     return NextResponse.json(philosophy)
   } catch (error) {
     return NextResponse.json(
@@ -25,7 +28,9 @@ export async function POST(request) {
 
   try {
     const body = await request.json()
-    const philosophy = await philosophyService.create(body)
+    const lang = request.nextUrl.searchParams.get('lang')
+    const locale = isLocaleSupported(lang) ? lang : defaultLocale
+    const philosophy = await philosophyService.create(body, locale)
     return NextResponse.json(philosophy, { status: 201 })
   } catch (error) {
     return NextResponse.json(
@@ -45,7 +50,9 @@ export async function PUT(request) {
 
   try {
     const body = await request.json()
-    const philosophy = await philosophyService.upsert(body)
+    const lang = request.nextUrl.searchParams.get('lang')
+    const locale = isLocaleSupported(lang) ? lang : defaultLocale
+    const philosophy = await philosophyService.upsert(body, locale)
     return NextResponse.json(philosophy)
   } catch (error) {
     return NextResponse.json(

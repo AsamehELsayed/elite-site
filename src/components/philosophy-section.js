@@ -6,8 +6,10 @@ import ClickSpark from "./ClickSpark"
 import LiquidEther from "./LiquidEther"
 import { LaserFlow } from "@/components/leserflow"
 import Galaxy from "./star"
+import { useLocale } from "@/components/locale-provider"
 
 export function PhilosophySection() {
+  const { locale } = useLocale()
   const ref = useRef(null)
   const [philosophy, setPhilosophy] = useState(null)
   const { scrollYProgress } = useScroll({
@@ -24,7 +26,7 @@ export function PhilosophySection() {
   useEffect(() => {
     const fetchPhilosophy = async () => {
       try {
-        const response = await fetch('/api/philosophy')
+        const response = await fetch(`/api/philosophy?lang=${locale}`)
         if (response.ok) {
           const data = await response.json()
           if (data && !data.error) {
@@ -37,10 +39,10 @@ export function PhilosophySection() {
     }
     
     fetchPhilosophy()
-  }, [])
+  }, [locale])
 
   return (
-    <section ref={ref} id="philosophy" className="w-full h-screen flex items-center justify-center bg-black relative overflow-hidden">
+    <section ref={ref} id="philosophy" className="w-full min-h-screen md:h-screen flex items-center justify-center bg-black relative overflow-hidden">
       {/* Enhanced gradient overlay */}
       <div className="absolute inset-0 gradient-mesh opacity-50 z-0 pointer-events-none"></div>
       {/* Enhanced background effects */}
@@ -103,7 +105,7 @@ export function PhilosophySection() {
       />
 
       {/* Mirrored hero video panel */}
-      <div className="absolute inset-0 w-full left-0 right-0 top-0 flex items-start justify-center pointer-events-none z-2">
+      <div className="absolute inset-0 w-full left-0 right-0 top-0 flex items-start justify-center pointer-events-none z-2" suppressHydrationWarning>
         <div className="relative w-full">
           <div className="relative h-64 md:h-80 lg:h-[26rem] w-full">
             <div className="absolute inset-0 overflow-hidden opacity-80 w-full">
@@ -114,6 +116,7 @@ export function PhilosophySection() {
                 playsInline
                 aria-hidden="true"
                 className="w-full h-full object-cover scale-y-[-1] blur-sm"
+                suppressHydrationWarning
               >
                 <source src="/hero-video.mp4" type="video/mp4" />
                 <source src="/hero-video.webm" type="video/webm" />
@@ -124,8 +127,8 @@ export function PhilosophySection() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10 py-20 md:py-32">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      <div className="container mx-auto px-4 sm:px-5 md:px-6 lg:px-8 relative z-10 py-16 sm:py-20 md:py-24 lg:py-32">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-20 items-center">
           {/* Left Column - Title */}
           <motion.div
             initial={{ opacity: 0, x: -100, rotateY: -20 }}
@@ -144,7 +147,7 @@ export function PhilosophySection() {
               className="absolute -left-8 top-0 bottom-0 w-[2px] bg-linear-to-b from-primary via-primary/50 to-transparent origin-top"
             />
             
-            <h2 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-bold text-white leading-[1.1] mb-6 md:mb-10">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-bold text-white leading-[1.1] mb-4 sm:mb-6 md:mb-8 lg:mb-10">
               {philosophy?.title ? (
                 <motion.span
                   initial={{ opacity: 0, y: 60, filter: "blur(20px)" }}
@@ -211,7 +214,7 @@ export function PhilosophySection() {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
             viewport={{ once: false, amount: 0.3 }}
-            className="space-y-10 md:space-y-12"
+            className="space-y-6 sm:space-y-8 md:space-y-10 lg:space-y-12"
           >
             <motion.div
               initial={{ opacity: 0, y: 40 }}
@@ -226,17 +229,13 @@ export function PhilosophySection() {
                   whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
                   transition={{ duration: 1, delay: 0.5 }}
                   viewport={{ once: false }}
-                >
-                  {philosophy.content.split('\n').map((line, i) => (
-                    <p key={i} className="text-xl md:text-2xl lg:text-3xl text-zinc-100 font-light leading-relaxed md:leading-loose mb-4">
-                      {line}
-                    </p>
-                  ))}
-                </motion.div>
+                  className="prose prose-invert max-w-none text-base sm:text-lg md:text-xl"
+                  dangerouslySetInnerHTML={{ __html: philosophy.content }}
+                />
               ) : (
                 <>
                   <motion.p 
-                    className="text-xl md:text-2xl lg:text-3xl text-zinc-100 font-light leading-relaxed md:leading-loose"
+                    className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-zinc-100 font-light leading-relaxed sm:leading-relaxed md:leading-loose"
                     initial={{ opacity: 0, filter: "blur(10px)", y: 30 }}
                     whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
                     transition={{ duration: 1, delay: 0.5 }}
@@ -260,7 +259,7 @@ export function PhilosophySection() {
                 viewport={{ once: false }}
               >
                 <motion.p 
-                  className="text-lg md:text-xl text-zinc-300 leading-relaxed md:leading-loose"
+                  className="text-base sm:text-lg md:text-xl text-zinc-300 leading-relaxed sm:leading-relaxed md:leading-loose"
                   initial={{ opacity: 0, filter: "blur(10px)", y: 30 }}
                   whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
                   transition={{ duration: 1, delay: 0.8 }}
@@ -273,7 +272,7 @@ export function PhilosophySection() {
             
             {/* Enhanced divider and labels */}
             <motion.div 
-              className="pt-8 md:pt-12 relative"
+              className="pt-6 sm:pt-8 md:pt-10 lg:pt-12 relative"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 1, delay: 1 }}
@@ -281,7 +280,7 @@ export function PhilosophySection() {
             >
               {/* Gradient divider */}
               <motion.div 
-                className="h-px w-full mb-10 md:mb-12 relative overflow-hidden"
+                className="h-px w-full mb-6 sm:mb-8 md:mb-10 lg:mb-12 relative overflow-hidden"
                 initial={{ scaleX: 0 }}
                 whileInView={{ scaleX: 1 }}
                 transition={{ duration: 1.2, delay: 1, ease: "easeOut" }}
@@ -292,7 +291,7 @@ export function PhilosophySection() {
               </motion.div>
               
               {/* Labels with enhanced styling */}
-              <div className="flex flex-wrap justify-between gap-6 md:gap-8 text-sm md:text-base uppercase tracking-[0.2em]">
+              <div className="flex flex-wrap justify-between gap-4 sm:gap-6 md:gap-8 text-xs sm:text-sm md:text-base uppercase tracking-[0.15em] sm:tracking-[0.2em]">
                 {[
                   { label: "Strategy", delay: 1.2 },
                   { label: "Design", delay: 1.3 },

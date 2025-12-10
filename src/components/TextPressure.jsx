@@ -1,6 +1,7 @@
 // Component ported from https://codepen.io/JuanFuentes/full/rgXKGQ
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { cn } from '@/lib/utils';
 
 const TextPressure = ({
   text = 'Compressa',
@@ -22,7 +23,9 @@ const TextPressure = ({
   strokeWidth = 2,
   className = '',
 
-  minFontSize = 24
+  minFontSize = 24,
+  direction = 'auto',
+  lang
 }) => {
   const containerRef = useRef(null);
   const titleRef = useRef(null);
@@ -35,7 +38,27 @@ const TextPressure = ({
   const [scaleY, setScaleY] = useState(1);
   const [lineHeight, setLineHeight] = useState(1);
 
-  const chars = text.split('');
+  const isRtlText = useMemo(() => {
+    const rtlRegex = /[\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC]/;
+    return rtlRegex.test(text);
+  }, [text]);
+
+  const computedDir =
+    direction === 'rtl' || (direction === 'auto' && isRtlText) ? 'rtl' : 'ltr';
+  const uppercaseAllowed = computedDir === 'ltr';
+  const usePerChar = computedDir === 'ltr';
+
+  const segments = useMemo(() => {
+    if (!usePerChar) return [text];
+    if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+      const segmenter = new Intl.Segmenter(
+        computedDir === 'rtl' ? 'ar' : 'en',
+        { granularity: 'grapheme' }
+      );
+      return Array.from(segmenter.segment(text), item => item.segment);
+    }
+    return Array.from(text);
+  }, [computedDir, text, usePerChar]);
 
   const dist = (a, b) => {
     const dx = b.x - a.x;
@@ -76,7 +99,8 @@ const TextPressure = ({
 
     const { width: containerW, height: containerH } = containerRef.current.getBoundingClientRect();
 
-    let newFontSize = containerW / (chars.length / 2);
+    const baseUnits = usePerChar ? segments.length : Math.max(text.length, 8);
+    let newFontSize = containerW / (baseUnits / 2);
     newFontSize = Math.max(newFontSize, minFontSize);
 
     setFontSize(newFontSize);
@@ -100,7 +124,7 @@ const TextPressure = ({
     window.addEventListener('resize', setSize);
     return () => window.removeEventListener('resize', setSize);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scale, text]);
+  }, [scale, segments.length, usePerChar, text.length]);
 
   useEffect(() => {
     let rafId;
@@ -123,18 +147,23 @@ const TextPressure = ({
 
           const d = dist(mouseRef.current, charCenter);
 
-          const getAttr = (distance, minVal, maxVal) => {
-            const val = maxVal - Math.abs((maxVal * distance) / maxDist);
-            return Math.max(minVal, val + minVal);
-          };
+          if (usePerChar) {
+            const getAttr = (distance, minVal, maxVal) => {
+              const val = maxVal - Math.abs((maxVal * distance) / maxDist);
+              return Math.max(minVal, val + minVal);
+            };
 
-          const wdth = width ? Math.floor(getAttr(d, 5, 200)) : 100;
-          const wght = weight ? Math.floor(getAttr(d, 100, 900)) : 400;
-          const italVal = italic ? getAttr(d, 0, 1).toFixed(2) : 0;
-          const alphaVal = alpha ? getAttr(d, 0, 1).toFixed(2) : 1;
+            const wdth = width ? Math.floor(getAttr(d, 5, 200)) : 100;
+            const wght = weight ? Math.floor(getAttr(d, 100, 900)) : 400;
+            const italVal = italic ? getAttr(d, 0, 1).toFixed(2) : 0;
+            const alphaVal = alpha ? getAttr(d, 0, 1).toFixed(2) : 1;
 
-          span.style.opacity = alphaVal;
-          span.style.fontVariationSettings = `'wght' ${wght}, 'wdth' ${wdth}, 'ital' ${italVal}`;
+            span.style.opacity = alphaVal;
+            span.style.fontVariationSettings = `'wght' ${wght}, 'wdth' ${wdth}, 'ital' ${italVal}`;
+          } else {
+            span.style.opacity = 1;
+            span.style.fontVariationSettings = '';
+          }
         });
       }
 
@@ -143,7 +172,7 @@ const TextPressure = ({
 
     animate();
     return () => cancelAnimationFrame(rafId);
-  }, [width, weight, italic, alpha, chars.length]);
+  }, [width, weight, italic, alpha, segments.length, usePerChar]);
 
   return (
     <div
@@ -172,9 +201,15 @@ const TextPressure = ({
       `}</style>
       <h1
         ref={titleRef}
-        className={`text-pressure-title ${className} ${
-          flex ? 'flex justify-between' : ''
-        } ${stroke ? 'stroke' : ''} uppercase text-center`}
+        dir={computedDir}
+        lang={lang || (computedDir === 'rtl' ? 'ar' : undefined)}
+        className={cn(
+          'text-pressure-title text-center',
+          className,
+          flex && usePerChar && 'flex justify-between',
+          stroke && 'stroke',
+          uppercaseAllowed && 'uppercase'
+        )}
         style={{
           fontFamily,
           fontSize: fontSize,
@@ -183,14 +218,16 @@ const TextPressure = ({
           transformOrigin: 'center top',
           margin: 0,
           fontWeight: 100,
-          color: stroke ? undefined : textColor
+          color: stroke ? undefined : textColor,
+          direction: computedDir
         }}>
-        {chars.map((char, i) => (
+        {segments.map((char, i) => (
           <span
             key={i}
             ref={el => (spansRef.current[i] = el)}
             data-char={char}
-            className="inline-block">
+            className="inline-block"
+            style={{ unicodeBidi: 'isolate', display: usePerChar ? 'inline-block' : 'inline' }}>
             {char}
           </span>
         ))}

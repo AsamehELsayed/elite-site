@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server'
 import { visualService } from '@/services/visualService'
 import { requireAdmin } from '@/lib/auth'
+import { defaultLocale, isLocaleSupported } from '@/lib/i18n'
 
 // Public: Guest users can view visual section
-export async function GET() {
+export async function GET(request) {
   try {
-    const visual = await visualService.get()
+    const lang = request.nextUrl.searchParams.get('lang')
+    const locale = isLocaleSupported(lang) ? lang : defaultLocale
+    const visual = await visualService.get(locale)
     if (!visual) {
       // Return empty object instead of null for better client handling
       return NextResponse.json({
@@ -46,7 +49,9 @@ export async function POST(request) {
 
   try {
     const body = await request.json()
-    const visual = await visualService.create(body)
+    const lang = request.nextUrl.searchParams.get('lang')
+    const locale = isLocaleSupported(lang) ? lang : defaultLocale
+    const visual = await visualService.create(body, locale)
     
     // Parse JSON strings back to arrays
     const parsed = {
@@ -76,7 +81,9 @@ export async function PUT(request) {
     const body = await request.json()
     console.log('PUT /api/visuals - Received data:', JSON.stringify(body, null, 2))
     
-    const visual = await visualService.upsert(body)
+    const lang = request.nextUrl.searchParams.get('lang')
+    const locale = isLocaleSupported(lang) ? lang : defaultLocale
+    const visual = await visualService.upsert(body, locale)
     
     // Parse JSON strings back to arrays
     const parsed = {

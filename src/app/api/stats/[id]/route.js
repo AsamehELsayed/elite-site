@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server'
 import { statService } from '@/services/statService'
 import { requireAdmin } from '@/lib/auth'
+import { defaultLocale, isLocaleSupported } from '@/lib/i18n'
 
 // Public: Guest users can view individual stats
 export async function GET(request, { params }) {
   try {
-    const { id } = params
-    const stat = await statService.getById(id)
+    const { id } = await params
+    const lang = request.nextUrl.searchParams.get('lang')
+    const locale = isLocaleSupported(lang) ? lang : defaultLocale
+    const stat = await statService.getById(id, locale)
     if (!stat) {
       return NextResponse.json(
         { error: 'Stat not found' },
@@ -31,9 +34,11 @@ export async function PUT(request, { params }) {
   }
 
   try {
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
-    const stat = await statService.update(id, body)
+    const lang = request.nextUrl.searchParams.get('lang')
+    const locale = isLocaleSupported(lang) ? lang : defaultLocale
+    const stat = await statService.update(id, body, locale)
     return NextResponse.json(stat)
   } catch (error) {
     return NextResponse.json(
@@ -52,7 +57,7 @@ export async function DELETE(request, { params }) {
   }
 
   try {
-    const { id } = params
+    const { id } = await params
     await statService.delete(id)
     return NextResponse.json({ message: 'Stat deleted successfully' })
   } catch (error) {

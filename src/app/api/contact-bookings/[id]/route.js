@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { contactBookingService } from '@/services/contactBookingService'
 import { requireAdmin } from '@/lib/auth'
+import { defaultLocale, isLocaleSupported } from '@/lib/i18n'
 
 // Protected: Only authenticated admin can view individual contact bookings
 export async function GET(request, { params }) {
@@ -11,8 +12,10 @@ export async function GET(request, { params }) {
   }
 
   try {
-    const { id } = params
-    const booking = await contactBookingService.getById(id)
+    const { id } = await params
+    const lang = request.nextUrl.searchParams.get('lang')
+    const locale = isLocaleSupported(lang) ? lang : defaultLocale
+    const booking = await contactBookingService.getById(id, locale)
     if (!booking) {
       return NextResponse.json(
         { error: 'Contact booking not found' },
@@ -37,9 +40,11 @@ export async function PUT(request, { params }) {
   }
 
   try {
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
-    const booking = await contactBookingService.update(id, body)
+    const lang = request.nextUrl.searchParams.get('lang')
+    const locale = isLocaleSupported(lang) ? lang : defaultLocale
+    const booking = await contactBookingService.update(id, body, locale)
     return NextResponse.json(booking)
   } catch (error) {
     return NextResponse.json(
@@ -58,7 +63,7 @@ export async function DELETE(request, { params }) {
   }
 
   try {
-    const { id } = params
+    const { id } = await params
     await contactBookingService.delete(id)
     return NextResponse.json({ message: 'Contact booking deleted successfully' })
   } catch (error) {
