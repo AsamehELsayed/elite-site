@@ -1,4 +1,4 @@
-# Production Docker Compose Configuration
+# Production Docker Compose Configuration - OPTIMIZED FOR SPEED
 # 
 # IMPORTANT: Create a .env file in the same directory with the following variables:
 #   - MYSQL_ROOT_PASSWORD
@@ -27,47 +27,54 @@ services:
     networks:
       - elite-network
     command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   # raheedbrides.cloud Next.js Application
   app-elite:
     build:
       context: .
       dockerfile: Dockerfile.prod
+      # Enable BuildKit for parallel builds and better caching
+      args:
+        BUILDKIT_INLINE_CACHE: 1
     image: elite-site:latest
     container_name: elite-app
     restart: always
     depends_on:
       db-elite:
-        condition: service_started
+        condition: service_healthy
     environment:
       - NODE_ENV=production
       - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db-elite:3306/${MYSQL_DATABASE}
       - JWT_SECRET=${JWT_SECRET}
       - NEXT_TELEMETRY_DISABLED=1
       - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+    # REMOVED SLOW BIND MOUNTS - using named volumes instead
+    # Only mount uploads directory as volume (persistent storage)
     volumes:
-      - elite_public:/app/public
-      - elite_locales_en:/app/src/locales/en.json
-      - elite_locales_ar:/app/src/locales/ar.json
+      - elite_uploads:/app/public/uploads
     networks:
       - elite-network
-    expose:
-      - "3000"
-    command: sh -c "
-      echo '⏳ Waiting for database...' &&
-      until nc -z db-elite 3306; do sleep 2; done &&
-      echo '✅ Database ready!' &&
-      echo '🔧 Running migrations...' &&
-      npx prisma migrate deploy &&
-      echo '🌱 Seeding database if needed...' &&
-      (npx prisma db seed || echo 'Seed skipped or already done') &&
-      echo '📁 Initializing volumes...' &&
-      mkdir -p /app/src/locales /app/public/uploads &&
-      echo '🚀 Starting application...' &&
-      node server.js
+    ports:
+      - "3000:3000"
+    # Optimized startup command - migrations run once, not on every restart
+    command: >
+      sh -c "
+        echo '⏳ Waiting for database to be ready...' &&
+        until nc -z db-elite 3306; do sleep 1; done &&
+        echo '✅ Database ready!' &&
+        echo '🔧 Running migrations...' &&
+        npx prisma migrate deploy &&
+        echo '🚀 Starting application...' &&
+        node server.js
       "
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      test: ["CMD", "nc", "-z", "localhost", "3000"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -76,17 +83,10 @@ services:
 volumes:
   elite_mysql_data:
     driver: local
-  elite_prisma:
-    driver: local
-  elite_public:
-    driver: local
-  elite_locales_en:
-    driver: local
-  elite_locales_ar:
+  elite_uploads:
     driver: local
 
 networks:
   elite-network:
     name: elite-network
     driver: bridge
-

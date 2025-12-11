@@ -1,24 +1,92 @@
+# Dependencies
 node_modules
 npm-debug.log
+yarn-error.log
+package-lock.json.bak
+
+# Build outputs
 .next
+out
+dist
+build
+*.tsbuildinfo
+
+# Git
 .git
 .gitignore
-README.md
+.gitattributes
+
+# Environment files
 .env
-.env.local
-.env.development
-.env.test
-.DS_Store
+.env.*
+!.env.example
+
+# Documentation (exclude all markdown except deployment guide)
 *.md
 !DEPLOYMENT_GUIDE.md
+
+# Docker files (don't copy into image)
 docker-compose*.yml
 Dockerfile*
+.dockerignore
+
+# IDE
 .vscode
 .idea
+*.swp
+*.swo
+*~
+.cursor
+
+# OS files
+.DS_Store
+Thumbs.db
+*.log
+
+# Testing
 coverage
 .nyc_output
-*.log
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+__tests__
+__mocks__
+
+# Development files
+dev.db
+*.db-journal
 prisma/dev.db
 prisma/prisma/dev.db
-.cursor
+
+# Temporary files
+tmp
+temp
+*.tmp
+.cache
+
+# Uploads (will be mounted as volume)
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Scripts that aren't needed in production
+scripts/*.sh
+scripts/backup-*.sh
+scripts/restore-*.sh
+scripts/health-check.sh
+scripts/setup-*.sh
+scripts/check-*.js
+
+# PowerShell scripts
+*.ps1
+
+# Shell scripts (keep only essential ones)
+*.sh
+!scripts/start-server.sh
+
+# Other
 terminals
+.cache
+*.pid
+*.seed
+*.pid.lock

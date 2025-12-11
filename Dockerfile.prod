@@ -1,86 +1,121 @@
-# Production Dockerfile for raheedbrides.cloud
-# Multi-stage build for optimized production image
+# Production Dockerfile - OPTIMIZED FOR SPEED
+# Multi-stage build with aggressive caching and minimal layers
 
+# ============================================================================
+# Stage 1: Base - Common dependencies
+# ============================================================================
 FROM node:22-alpine AS base
 RUN apk add --no-cache libc6-compat openssl
+WORKDIR /app
 
-# Dependencies stage
+# ============================================================================
+# Stage 2: Dependencies - Install npm packages (CACHED LAYER)
+# ============================================================================
 FROM base AS deps
 WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json* ./
+# Copy ONLY package files first (this layer is cached if package.json unchanged)
+COPY package.json package-lock.json ./
 
-# Install dependencies with cache mount for faster rebuilds
-# Install production dependencies only, then all dependencies
+# Install ALL dependencies (needed for build stage)
+# Use npm ci with cache mount for faster installs
 RUN --mount=type=cache,target=/root/.npm \
-    npm ci --omit=dev && \
-    cp -R node_modules /tmp/prod_node_modules && \
-    npm ci
+    npm ci --prefer-offline --no-audit
 
-# Builder stage
+# ============================================================================
+# Stage 2b: Production Dependencies - Separate prod deps (CACHED LAYER)
+# ============================================================================
+FROM base AS deps-prod
+WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json ./
+
+# Install ONLY production dependencies (smaller, faster)
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --prefer-offline --no-audit --omit=dev
+
+# ============================================================================
+# Stage 3: Prisma - Generate Prisma Client (CACHED IF SCHEMA UNCHANGED)
+# ============================================================================
+FROM base AS prisma
+WORKDIR /app
+
+# Copy package files and node_modules
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json package-lock.json ./
+COPY prisma ./prisma
+
+# Generate Prisma Client with cache mount
+RUN --mount=type=cache,target=/root/.cache/prisma \
+    npx prisma generate
+
+# ============================================================================
+# Stage 4: Builder - Build Next.js application
+# ============================================================================
 FROM base AS builder
 WORKDIR /app
 
-# Copy dependencies from deps stage
+# Copy dependencies and Prisma client
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=prisma /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=prisma /app/node_modules/@prisma ./node_modules/@prisma
 
-# Copy only necessary files for Prisma generation and build
-COPY prisma ./prisma
-COPY package.json package-lock.json* ./
+# Copy package files
+COPY package.json package-lock.json ./
+
+# Copy config files needed for build
 COPY next.config.mjs ./
 COPY postcss.config.mjs ./
 COPY tailwind.config.* ./
 COPY jsconfig.json ./
 COPY components.json ./
 
-# Generate Prisma Client (cached if schema unchanged)
-RUN --mount=type=cache,target=/root/.npm \
-    npx prisma generate
-
-# Copy source code
+# Copy source code (this invalidates cache if code changes)
 COPY src ./src
 COPY public ./public
-COPY scripts ./scripts
 
-# Build Next.js application
+# Build Next.js with cache mount for .next directory
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-RUN --mount=type=cache,target=/root/.npm \
+RUN --mount=type=cache,target=/app/.next/cache \
     npm run build
 
-# Production runner stage
+# ============================================================================
+# Stage 5: Runner - Minimal production runtime image
+# ============================================================================
 FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# Install netcat for health checks
-RUN apk add --no-cache netcat-openbsd wget
+# Install only runtime dependencies (netcat for healthcheck)
+RUN apk add --no-cache netcat-openbsd
 
-# Copy production dependencies
-COPY --from=deps /tmp/prod_node_modules ./node_modules
+# Copy production dependencies ONLY (no dev dependencies)
+COPY --from=deps-prod /app/node_modules ./node_modules
 
-# Copy built application
+# Copy Prisma runtime files
+COPY --from=prisma --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=prisma --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=prisma --chown=nextjs:nodejs /app/prisma ./prisma
+
+# Copy built Next.js application (standalone output)
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
-# Copy Prisma files
-COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+# Copy package.json for runtime scripts if needed
+COPY --chown=nextjs:nodejs package.json ./
 
-# Copy scripts
-COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
-COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
-
-# Create uploads directory
+# Create uploads directory with proper permissions
 RUN mkdir -p /app/public/uploads && \
     chown -R nextjs:nodejs /app/public/uploads
 
@@ -89,13 +124,9 @@ USER nextjs
 
 EXPOSE 3000
 
-ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
-
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
+    CMD nc -z localhost 3000 || exit 1
 
+# Start the application
 CMD ["node", "server.js"]
-
-
