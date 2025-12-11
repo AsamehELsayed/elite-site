@@ -1,3 +1,16 @@
+# Production Docker Compose Configuration
+# 
+# IMPORTANT: Create a .env file in the same directory with the following variables:
+#   - MYSQL_ROOT_PASSWORD
+#   - MYSQL_DATABASE
+#   - MYSQL_USER
+#   - MYSQL_PASSWORD
+#   - JWT_SECRET
+#   - NEXT_PUBLIC_SITE_URL
+#
+# Docker Compose automatically reads .env file from the current directory.
+# See DEPLOYMENT_GUIDE.md for detailed setup instructions.
+
 services:
   # MySQL Database for raheedbrides.cloud
   db-elite:

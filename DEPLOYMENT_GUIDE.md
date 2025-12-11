@@ -11,18 +11,31 @@
 
 ### 1. Prepare Environment Variables
 
+**Important**: Docker Compose automatically reads `.env` file from the same directory. Create this file with your production credentials.
+
 ```bash
 # On your production server, navigate to your elite-site directory
 cd /path/to/elite-site
 
-# Copy the example environment file
-cp .env.production.example .env.production
-
-# Edit with secure credentials
-nano .env.production
+# Create the .env file
+nano .env
 ```
 
-**Important**: Generate strong passwords and JWT secret:
+**Add the following variables to `.env`:**
+
+```env
+# MySQL Database Configuration
+MYSQL_ROOT_PASSWORD=your_secure_root_password_here
+MYSQL_DATABASE=elite_production
+MYSQL_USER=elite_user
+MYSQL_PASSWORD=your_secure_database_password_here
+
+# Application Configuration
+JWT_SECRET=your_64_character_jwt_secret_here
+NEXT_PUBLIC_SITE_URL=https://raheedbrides.cloud
+```
+
+**Generate strong passwords and JWT secret:**
 ```bash
 # Generate a secure JWT secret (64 characters)
 openssl rand -base64 48
@@ -30,6 +43,8 @@ openssl rand -base64 48
 # Generate database passwords
 openssl rand -base64 32
 ```
+
+**Security Note**: The `.env` file contains sensitive credentials. Make sure it's not committed to git (it's already in `.gitignore`).
 
 ### 2. SSL Certificate Setup
 
