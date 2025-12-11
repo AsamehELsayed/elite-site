@@ -13,9 +13,26 @@
 
 **Important**: Docker Compose automatically reads `.env` file from the same directory. Create this file with your production credentials.
 
+#### Option A: Use the Setup Script (Recommended)
+
 ```bash
 # On your production server, navigate to your elite-site directory
-cd /path/to/elite-site
+cd /root/elite-site
+
+# Run the setup script (generates secure random values automatically)
+bash scripts/setup-env.sh
+```
+
+The script will:
+- Generate secure random passwords and JWT secret
+- Create the `.env` file with all required variables
+- Display the generated values (save them securely!)
+
+#### Option B: Manual Setup
+
+```bash
+# On your production server, navigate to your elite-site directory
+cd /root/elite-site
 
 # Create the .env file
 nano .env
