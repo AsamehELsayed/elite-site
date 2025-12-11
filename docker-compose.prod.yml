@@ -63,10 +63,11 @@ services:
     ports:
       - "3000:3000"
     # Optimized startup command - migrations run once, not on every restart
+    # Use both service name (db-elite) and container name (elite-db) for compatibility
     command: >
       sh -c "
         echo '⏳ Waiting for database to be ready...' &&
-        until nc -z db-elite 3306; do sleep 1; done &&
+        until nc -z db-elite 3306 || nc -z elite-db 3306; do sleep 1; done &&
         echo '✅ Database ready!' &&
         echo '🔧 Running migrations...' &&
         npx prisma migrate deploy &&
