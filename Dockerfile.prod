@@ -11,10 +11,11 @@ WORKDIR /app
 # Copy package files
 COPY package.json package-lock.json* ./
 
-# Install production dependencies only
-RUN npm ci --omit=dev && \
+# Install production dependencies only, then all dependencies
+# Using npm install instead of npm ci to handle lock file sync issues
+RUN npm install --omit=dev && \
     cp -R node_modules /tmp/prod_node_modules && \
-    npm ci
+    npm install
 
 # Builder stage
 FROM base AS builder

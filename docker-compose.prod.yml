@@ -38,6 +38,8 @@ services:
     expose:
       - "3000"
     command: sh -c "
+      echo '📦 Installing dependencies...' &&
+      npm install --omit=dev &&
       echo '⏳ Waiting for database...' &&
       until nc -z db-elite 3306; do sleep 2; done &&
       echo '✅ Database ready!' &&
