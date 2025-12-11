@@ -11,11 +11,12 @@ WORKDIR /app
 # Copy package files
 COPY package.json package-lock.json* ./
 
+# Install dependencies with cache mount for faster rebuilds
 # Install production dependencies only, then all dependencies
-# Using npm install instead of npm ci to handle lock file sync issues
-RUN npm install --omit=dev && \
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --omit=dev && \
     cp -R node_modules /tmp/prod_node_modules && \
-    npm install
+    npm ci
 
 # Builder stage
 FROM base AS builder
@@ -23,15 +24,30 @@ WORKDIR /app
 
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
 
-# Generate Prisma Client
-RUN npx prisma generate
+# Copy only necessary files for Prisma generation and build
+COPY prisma ./prisma
+COPY package.json package-lock.json* ./
+COPY next.config.mjs ./
+COPY postcss.config.mjs ./
+COPY tailwind.config.* ./
+COPY jsconfig.json ./
+COPY components.json ./
+
+# Generate Prisma Client (cached if schema unchanged)
+RUN --mount=type=cache,target=/root/.npm \
+    npx prisma generate
+
+# Copy source code
+COPY src ./src
+COPY public ./public
+COPY scripts ./scripts
 
 # Build Next.js application
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-RUN npm run build
+RUN --mount=type=cache,target=/root/.npm \
+    npm run build
 
 # Production runner stage
 FROM base AS runner

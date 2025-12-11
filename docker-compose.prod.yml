@@ -30,6 +30,9 @@ services:
 
   # raheedbrides.cloud Next.js Application
   app-elite:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
     image: elite-site:latest
     container_name: elite-app
     restart: always
