@@ -1,5 +1,3 @@
-"use server"
-
 import { prisma } from '@/lib/prisma'
 import { applyTranslations, defaultLocale, upsertTranslations } from '@/lib/i18n'
 

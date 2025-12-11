@@ -81,7 +81,11 @@ async function loadCaseStudy(slug, locale = defaultLocale) {
   try {
     return await caseStudyService.getBySlugOrId(slug, locale)
   } catch (error) {
-    console.error('[case-study]', error)
+    // Silently fail during build - database not available
+    // Errors are expected during static generation
+    if (process.env.NEXT_PHASE !== 'phase-production-build') {
+      console.error('[case-study]', error)
+    }
     return null
   }
 }

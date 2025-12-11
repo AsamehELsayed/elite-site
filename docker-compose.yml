@@ -24,6 +24,9 @@ services:
       - .:/app
       - /app/node_modules
       - /app/.next
+      - ./src/locales/en.json:/app/src/locales/en.json
+      - ./src/locales/ar.json:/app/src/locales/ar.json
+      - ./public:/app/public
     environment:
       - NODE_ENV=development
       - DATABASE_URL=mysql://root:@db:3306/elite

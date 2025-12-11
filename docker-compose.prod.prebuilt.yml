@@ -15,9 +15,11 @@ services:
       - elite-network
     command: --default-authentication-plugin=mysql_native_password
 
-  # raheedbrides.cloud Next.js Application
+  # raheedbrides.cloud Next.js Application (using pre-built files)
   app-elite:
-    image: elite-site:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.prod.prebuilt
     container_name: elite-app
     restart: always
     depends_on:
@@ -30,9 +32,7 @@ services:
       - NEXT_TELEMETRY_DISABLED=1
       - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
     volumes:
-      - elite_public:/app/public
-      - elite_locales_en:/app/src/locales/en.json
-      - elite_locales_ar:/app/src/locales/ar.json
+      - elite_uploads:/app/public/uploads
     networks:
       - elite-network
     expose:
@@ -45,8 +45,6 @@ services:
       npx prisma migrate deploy &&
       echo '🌱 Seeding database if needed...' &&
       (npx prisma db seed || echo 'Seed skipped or already done') &&
-      echo '📁 Initializing volumes...' &&
-      mkdir -p /app/src/locales /app/public/uploads &&
       echo '🚀 Starting application...' &&
       node server.js
       "
@@ -60,13 +58,9 @@ services:
 volumes:
   elite_mysql_data:
     driver: local
+  elite_uploads:
+    driver: local
   elite_prisma:
-    driver: local
-  elite_public:
-    driver: local
-  elite_locales_en:
-    driver: local
-  elite_locales_ar:
     driver: local
 
 networks:

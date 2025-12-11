@@ -17,6 +17,7 @@ const nextConfig = {
       },
     ],
   },
+  // Use webpack for builds (Turbopack is default in Next.js 16)
   webpack: (config, { dev, isServer }) => {
     if (dev && !isServer) {
       config.watchOptions = {
@@ -32,6 +33,9 @@ const nextConfig = {
     }
     return config;
   },
+  // Add empty turbopack config to silence the warning
+  // We're using webpack explicitly for compatibility with our custom config
+  turbopack: {},
 };
 
 export default nextConfig;

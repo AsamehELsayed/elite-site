@@ -23,7 +23,8 @@ import {
   Plus,
   Trash2,
   Save,
-  Edit3
+  Edit3,
+  Navigation
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
