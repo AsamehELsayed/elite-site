@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Elite-Mark.com Production Deployment Script
+# raheedbrides.cloud Production Deployment Script
 # Run this script on your production server
 
 set -e
 
-echo "🚀 Elite-Mark.com Production Deployment"
+echo "🚀 raheedbrides.cloud Production Deployment"
 echo "========================================"
 
 # Colors for output
@@ -150,7 +150,7 @@ echo ""
 echo -e "${GREEN}✅ Deployment complete!${NC}"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo -e "${GREEN}🎉 Elite-Mark.com is now running!${NC}"
+echo -e "${GREEN}🎉 raheedbrides.cloud is now running!${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "📝 Next steps:"
@@ -161,7 +161,7 @@ echo "   - Test: sudo nginx -t"
 echo "   - Reload: sudo systemctl reload nginx"
 echo ""
 echo "2. Setup SSL certificates:"
-echo "   - sudo certbot certonly --standalone -d elite-mark.com -d www.elite-mark.com"
+echo "   - sudo certbot certonly --standalone -d raheedbrides.cloud -d www.raheedbrides.cloud"
 echo ""
 echo "3. Monitor the application:"
 echo "   - View logs: docker-compose -f docker-compose.prod.yml logs -f"
@@ -174,4 +174,5 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo "📚 Full documentation: See DEPLOYMENT_GUIDE.md"
 echo ""
+
 

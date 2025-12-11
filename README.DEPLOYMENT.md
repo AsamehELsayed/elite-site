@@ -1,4 +1,4 @@
-# 🚀 Elite-Mark.com - Production Deployment Package
+# 🚀 raheedbrides.cloud - Production Deployment Package
 
 > **Complete Docker setup for deploying your Next.js application to production**
 
@@ -53,7 +53,7 @@ elite-site/
 │   └── .env.production.template   # Environment variables template
 │
 ├── 🌐 Nginx Configuration
-│   ├── nginx-elite-mark.conf      # Elite-mark.com config
+│   ├── nginx-elite-mark.conf      # raheedbrides.cloud config
 │   └── nginx-complete.conf        # All sites (3 domains)
 │
 ├── 🔧 Utility Scripts
@@ -208,9 +208,9 @@ After deployment, nginx will serve:
 - SSL: `/etc/nginx/certs/staging/`
 - Features: Basic auth, SEO blocked
 
-### 3. elite-mark.com (New Production) ⭐
+### 3. raheedbrides.cloud (New Production) ⭐
 - Upstream: `http://elite-app:3000`
-- SSL: `/etc/nginx/certs/live/elite-mark.com/`
+- SSL: `/etc/nginx/certs/live/raheedbrides.cloud/`
 - Features: Full production setup
 
 ## 🔄 Common Commands
@@ -273,7 +273,7 @@ sudo systemctl status nginx
 
 # 4. Test connectivity
 curl http://localhost:3000/api/health
-curl https://elite-mark.com/api/health
+curl https://raheedbrides.cloud/api/health
 ```
 
 ### Common Issues
@@ -294,10 +294,10 @@ docker exec -it elite-db mysql -u root -p
 **Site not accessible**
 ```bash
 # Check DNS
-dig elite-mark.com
+dig raheedbrides.cloud
 
 # Check SSL
-curl -vI https://elite-mark.com
+curl -vI https://raheedbrides.cloud
 
 # Check nginx
 sudo nginx -t
@@ -408,7 +408,7 @@ docker-compose -f docker-compose.prod.yml up -d
 ```bash
 sudo nginx -t
 sudo systemctl status nginx
-curl https://elite-mark.com/api/health
+curl https://raheedbrides.cloud/api/health
 ```
 
 ---
@@ -418,4 +418,5 @@ curl https://elite-mark.com/api/health
 **Maintainer**: Elite Development Team
 
 **Good luck with your deployment! 🚀**
+
 

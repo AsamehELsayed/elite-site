@@ -1,8 +1,8 @@
-# 🚀 Elite-Mark.com Production Deployment - Complete Package
+# 🚀 raheedbrides.cloud Production Deployment - Complete Package
 
 ## 📦 What's Included
 
-Your project is now **production-ready** with a complete Docker setup for deploying `elite-mark.com` alongside your existing sites.
+Your project is now **production-ready** with a complete Docker setup for deploying `raheedbrides.cloud` alongside your existing sites.
 
 ### ✅ Created Files
 
@@ -13,11 +13,11 @@ Your project is now **production-ready** with a complete Docker setup for deploy
 - ✅ `.env.production.template` - Environment variables template
 
 #### Nginx Configuration
-- ✅ `nginx-elite-mark.conf` - Elite-mark.com specific config
+- ✅ `nginx-elite-mark.conf` - raheedbrides.cloud specific config
 - ✅ `nginx-complete.conf` - Complete config with all 3 sites:
   - raheedbrides.com (production)
   - raheedbrides.cloud (staging)
-  - elite-mark.com (new production)
+  - raheedbrides.cloud (new production)
 
 #### Deployment Scripts
 - ✅ `deploy.sh` - Automated deployment script
@@ -54,7 +54,7 @@ sudo ./deploy.sh
 ### Step 3: Configure Nginx (5 minutes)
 ```bash
 # Get SSL certificate
-sudo certbot certonly --standalone -d elite-mark.com -d www.elite-mark.com
+sudo certbot certonly --standalone -d raheedbrides.cloud -d www.raheedbrides.cloud
 
 # Add nginx configuration
 sudo nano /etc/nginx/nginx.conf
@@ -65,13 +65,13 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-**Done!** Visit https://elite-mark.com
+**Done!** Visit https://raheedbrides.cloud
 
 ## 📋 Deployment Checklist
 
 ### Pre-Deployment
 - [ ] Server has Docker & Docker Compose installed
-- [ ] Domain `elite-mark.com` points to server IP
+- [ ] Domain `raheedbrides.cloud` points to server IP
 - [ ] Nginx is running
 - [ ] Ports 80 and 443 are open
 
@@ -208,8 +208,8 @@ sudo tail -f /var/log/nginx/error.log
 
 ### Site Not Accessible
 ```bash
-dig elite-mark.com
-curl -vI https://elite-mark.com
+dig raheedbrides.cloud
+curl -vI https://raheedbrides.cloud
 sudo nginx -t
 sudo systemctl status nginx
 ```
@@ -233,7 +233,7 @@ MYSQL_USER=elite_user
 MYSQL_PASSWORD=<secure-password>
 DATABASE_URL=mysql://elite_user:<password>@db-elite:3306/elite_production
 JWT_SECRET=<64-character-secret>
-NEXT_PUBLIC_SITE_URL=https://elite-mark.com
+NEXT_PUBLIC_SITE_URL=https://raheedbrides.cloud
 ```
 
 Generate with: `./scripts/generate-secrets.sh`
@@ -253,9 +253,9 @@ After deployment, your nginx will serve:
    - Uploads: `/var/www/uploads-staging/`
    - Protected: Basic Auth
 
-3. **elite-mark.com** (new production) ⭐
+3. **raheedbrides.cloud** (new production) ⭐
    - Upstream: `http://elite-app:3000`
-   - SSL: `/etc/nginx/certs/live/elite-mark.com/`
+   - SSL: `/etc/nginx/certs/live/raheedbrides.cloud/`
    - Uploads: `/var/www/elite-uploads/`
    - Rate limit: 10 req/s
 
@@ -309,7 +309,7 @@ After deployment, your nginx will serve:
 
 2. **Configure SSL**
    ```bash
-   sudo certbot certonly --standalone -d elite-mark.com -d www.elite-mark.com
+   sudo certbot certonly --standalone -d raheedbrides.cloud -d www.raheedbrides.cloud
    ```
 
 3. **Update Nginx**
@@ -350,7 +350,7 @@ After deployment, your nginx will serve:
 Your deployment is successful when:
 
 ✅ `./scripts/health-check.sh` shows all green  
-✅ `curl https://elite-mark.com/api/health` returns healthy  
+✅ `curl https://raheedbrides.cloud/api/health` returns healthy  
 ✅ Website loads in browser  
 ✅ Dashboard is accessible  
 ✅ Database operations work  
@@ -388,4 +388,5 @@ Everything is configured and ready. Follow the Quick Start above to deploy in ~2
 *Last Updated: December 2024*  
 *Version: 1.0.0*  
 *Maintainer: Elite Development Team*
+
 

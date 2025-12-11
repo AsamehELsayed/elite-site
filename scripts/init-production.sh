@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Elite-Mark.com Production Initialization Script
+# raheedbrides.cloud Production Initialization Script
 # This script runs inside the Docker container on first startup
 
 set -e
 
-echo "🚀 Initializing Elite-Mark.com Production..."
+echo "🚀 Initializing raheedbrides.cloud Production..."
 
 # Wait for database to be ready
 echo "⏳ Waiting for database to be ready..."
@@ -45,5 +45,6 @@ else
 fi
 
 echo "✅ Production initialization complete!"
-echo "🌐 Elite-Mark.com is ready to serve!"
+echo "🌐 raheedbrides.cloud is ready to serve!"
+
 

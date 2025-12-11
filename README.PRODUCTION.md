@@ -1,4 +1,4 @@
-# Elite-Mark.com Production Setup
+# raheedbrides.cloud Production Setup
 
 ## 📋 Overview
 
@@ -28,7 +28,7 @@ Docker Network (elite-network)
 - `scripts/init-production.sh` - Container initialization script
 
 ### Nginx Configuration
-- `nginx-elite-mark.conf` - Elite-mark.com specific configuration
+- `nginx-elite-mark.conf` - raheedbrides.cloud specific configuration
 - `nginx-complete.conf` - Complete configuration with all sites
 
 ### Environment
@@ -85,7 +85,7 @@ docker-compose -f docker-compose.prod.yml logs -f
 
 ### Health Check
 ```bash
-curl https://elite-mark.com/api/health
+curl https://raheedbrides.cloud/api/health
 ```
 
 ### Container Status
@@ -191,10 +191,10 @@ sudo tail -f /var/log/nginx/error.log
 ### Site Not Accessible
 ```bash
 # Check DNS
-dig elite-mark.com
+dig raheedbrides.cloud
 
 # Check SSL
-curl -vI https://elite-mark.com
+curl -vI https://raheedbrides.cloud
 
 # Test nginx config
 sudo nginx -t
@@ -313,4 +313,5 @@ Before going live:
 **Version**: 1.0.0  
 **Last Updated**: December 2024  
 **Maintainer**: Elite Development Team
+
 

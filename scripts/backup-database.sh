@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Database backup script for Elite-Mark.com
+# Database backup script for raheedbrides.cloud
 # Run this script to create a backup of the production database
 
 set -e
@@ -17,7 +17,7 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-echo "🗄️  Elite-Mark.com Database Backup"
+echo "🗄️  raheedbrides.cloud Database Backup"
 echo "=================================="
 
 # Create backup directory if it doesn't exist
@@ -67,4 +67,5 @@ ls -lh $BACKUP_DIR/*.sql.gz | tail -5
 
 echo ""
 echo -e "${GREEN}✅ Backup complete!${NC}"
+
 

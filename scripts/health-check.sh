@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Health check script for Elite-Mark.com
+# Health check script for raheedbrides.cloud
 # Checks application, database, and system health
 
 set -e
@@ -11,7 +11,7 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-echo "🏥 Elite-Mark.com Health Check"
+echo "🏥 raheedbrides.cloud Health Check"
 echo "=============================="
 echo ""
 
@@ -88,8 +88,8 @@ echo ""
 
 # Check SSL certificate expiry
 echo "🔒 SSL Certificate:"
-if [ -f /etc/letsencrypt/live/elite-mark.com/cert.pem ]; then
-    EXPIRY_DATE=$(openssl x509 -enddate -noout -in /etc/letsencrypt/live/elite-mark.com/cert.pem | cut -d= -f2)
+if [ -f /etc/letsencrypt/live/raheedbrides.cloud/cert.pem ]; then
+    EXPIRY_DATE=$(openssl x509 -enddate -noout -in /etc/letsencrypt/live/raheedbrides.cloud/cert.pem | cut -d= -f2)
     EXPIRY_EPOCH=$(date -d "$EXPIRY_DATE" +%s)
     NOW_EPOCH=$(date +%s)
     DAYS_LEFT=$(( ($EXPIRY_EPOCH - $NOW_EPOCH) / 86400 ))
@@ -130,4 +130,5 @@ fi
 echo ""
 echo "=============================="
 echo "🏥 Health check complete"
+
 

@@ -1,10 +1,10 @@
-# Quick Deployment Guide for Elite-Mark.com
+# Quick Deployment Guide for raheedbrides.cloud
 
 ## 🚀 Fast Track to Production
 
 ### Prerequisites
 - Ubuntu/Debian server with Docker installed
-- Domain `elite-mark.com` pointing to your server
+- Domain `raheedbrides.cloud` pointing to your server
 - Nginx already running (for other sites)
 
 ### Step 1: Clone & Setup (5 minutes)
@@ -72,8 +72,8 @@ sudo systemctl stop nginx
 
 # Get SSL certificate
 sudo certbot certonly --standalone \
-  -d elite-mark.com \
-  -d www.elite-mark.com \
+  -d raheedbrides.cloud \
+  -d www.raheedbrides.cloud \
   --agree-tos \
   --email your-email@example.com
 
@@ -121,21 +121,21 @@ Follow the prompts to create your admin account.
 
 ```bash
 # Check if site is accessible
-curl https://elite-mark.com/api/health
+curl https://raheedbrides.cloud/api/health
 
 # Should return:
 # {"status":"healthy","timestamp":"...","database":"connected"}
 
 # Check in browser
-# Visit: https://elite-mark.com
+# Visit: https://raheedbrides.cloud
 ```
 
 ## 🎉 Done! Your site is live!
 
 ### Access Points:
-- **Website**: https://elite-mark.com
-- **Dashboard**: https://elite-mark.com/dashboard
-- **Health Check**: https://elite-mark.com/api/health
+- **Website**: https://raheedbrides.cloud
+- **Dashboard**: https://raheedbrides.cloud/dashboard
+- **Health Check**: https://raheedbrides.cloud/api/health
 
 ### Common Commands:
 
@@ -210,4 +210,5 @@ docker-compose -f docker-compose.prod.yml up -d
 **Total Time: ~25 minutes** ⚡
 
 Need help? Check logs first, then review DEPLOYMENT_GUIDE.md
+
 

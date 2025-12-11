@@ -6,3 +6,4 @@ export default function PrivacyPolicyPage() {
   return <LegalPage variant="privacy" />
 }
 
+

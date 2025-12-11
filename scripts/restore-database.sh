@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Database restore script for Elite-Mark.com
+# Database restore script for raheedbrides.cloud
 # Usage: ./restore-database.sh <backup-file.sql.gz>
 
 set -e
@@ -16,7 +16,7 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-echo "🔄 Elite-Mark.com Database Restore"
+echo "🔄 raheedbrides.cloud Database Restore"
 echo "=================================="
 
 # Check if backup file is provided
@@ -102,4 +102,5 @@ docker-compose -f docker-compose.prod.yml restart app-elite
 echo ""
 echo -e "${GREEN}✅ Restore complete!${NC}"
 echo "   Safety backup: $SAFETY_BACKUP.gz"
+
 

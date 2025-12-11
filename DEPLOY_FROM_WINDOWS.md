@@ -1,4 +1,4 @@
-# Deploying Elite-Mark.com from Windows to Linux Server
+# Deploying raheedbrides.cloud from Windows to Linux Server
 
 ## 📋 Overview
 
@@ -156,7 +156,7 @@ DATABASE_URL=mysql://elite_user:<password>@db-elite:3306/elite_production
 JWT_SECRET=<paste-from-generate-secrets>
 
 # Site Configuration
-NEXT_PUBLIC_SITE_URL=https://elite-mark.com
+NEXT_PUBLIC_SITE_URL=https://raheedbrides.cloud
 ```
 
 Save with `Ctrl+X`, then `Y`, then `Enter`
@@ -181,8 +181,8 @@ sudo systemctl stop nginx
 
 # Get certificate
 sudo certbot certonly --standalone \
-  -d elite-mark.com \
-  -d www.elite-mark.com \
+  -d raheedbrides.cloud \
+  -d www.raheedbrides.cloud \
   --agree-tos \
   --email your-email@example.com
 
@@ -199,7 +199,7 @@ sudo cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.backup
 sudo nano /etc/nginx/nginx.conf
 ```
 
-Add the elite-mark.com configuration from `nginx-elite-mark.conf` file.
+Add the raheedbrides.cloud configuration from `nginx-elite-mark.conf` file.
 
 Or use the complete configuration:
 ```bash
@@ -228,7 +228,7 @@ sudo ./scripts/setup-cron.sh
 ./scripts/health-check.sh
 
 # Test in browser
-curl https://elite-mark.com/api/health
+curl https://raheedbrides.cloud/api/health
 ```
 
 ---
@@ -238,9 +238,9 @@ curl https://elite-mark.com/api/health
 After deployment, verify:
 
 - [ ] Containers are running: `docker ps`
-- [ ] Health check passes: `curl https://elite-mark.com/api/health`
-- [ ] Website loads: Open https://elite-mark.com in browser
-- [ ] Dashboard accessible: https://elite-mark.com/dashboard
+- [ ] Health check passes: `curl https://raheedbrides.cloud/api/health`
+- [ ] Website loads: Open https://raheedbrides.cloud in browser
+- [ ] Dashboard accessible: https://raheedbrides.cloud/dashboard
 - [ ] SSL certificate valid: Check in browser
 - [ ] No errors in logs: `docker logs elite-app`
 
@@ -384,14 +384,14 @@ ssh user@your-server-ip
 ## ✅ Success!
 
 Once deployed, your site will be live at:
-- **Website**: https://elite-mark.com
-- **Dashboard**: https://elite-mark.com/dashboard
-- **Health**: https://elite-mark.com/api/health
+- **Website**: https://raheedbrides.cloud
+- **Dashboard**: https://raheedbrides.cloud/dashboard
+- **Health**: https://raheedbrides.cloud/api/health
 
 Your nginx will serve three sites:
 1. raheedbrides.com (existing)
 2. raheedbrides.cloud (staging)
-3. elite-mark.com (new) ⭐
+3. raheedbrides.cloud (new) ⭐
 
 ---
 
@@ -422,4 +422,5 @@ Your nginx will serve three sites:
 **Total Time**: ~30 minutes from Windows to production! 🚀
 
 Good luck with your deployment!
+
 

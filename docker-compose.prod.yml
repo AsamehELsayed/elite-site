@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # MySQL Database for elite-mark.com
+  # MySQL Database for raheedbrides.cloud
   db-elite:
     image: mysql:8.0
     container_name: elite-db
@@ -17,7 +17,7 @@ services:
       - elite-network
     command: --default-authentication-plugin=mysql_native_password
 
-  # Elite-mark.com Next.js Application
+  # raheedbrides.cloud Next.js Application
   app-elite:
     build:
       context: .

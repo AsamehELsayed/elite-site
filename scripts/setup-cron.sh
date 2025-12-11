@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Setup automated tasks for Elite-Mark.com
+# Setup automated tasks for raheedbrides.cloud
 # - Daily database backups
 # - SSL certificate renewal
 # - Log rotation
@@ -12,7 +12,7 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-echo "⏰ Setting up Automated Tasks for Elite-Mark.com"
+echo "⏰ Setting up Automated Tasks for raheedbrides.cloud"
 echo "==============================================="
 
 # Check if running as root
@@ -45,7 +45,7 @@ sed -i '/elite-mark/d' $CRON_FILE
 # Add new cron jobs
 cat >> $CRON_FILE << EOF
 
-# Elite-Mark.com Automated Tasks
+# raheedbrides.cloud Automated Tasks
 # Database backup - Daily at 2:00 AM
 0 2 * * * cd $PROJECT_DIR && $PROJECT_DIR/scripts/backup-database.sh >> /var/log/elite-backup.log 2>&1
 
@@ -105,4 +105,5 @@ echo "Logs:"
 echo "  • Backups: /var/log/elite-backup.log"
 echo "  • SSL: /var/log/elite-ssl-renew.log"
 echo "  • Docker: /var/log/elite-docker-cleanup.log"
+
 

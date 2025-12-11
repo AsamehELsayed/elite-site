@@ -2,7 +2,7 @@
 
 # Generate secure secrets for production deployment
 
-echo "🔐 Generating Secure Secrets for Elite-Mark.com"
+echo "🔐 Generating Secure Secrets for raheedbrides.cloud"
 echo "================================================"
 echo ""
 
@@ -34,4 +34,5 @@ echo "⚠️  IMPORTANT: Save these securely!"
 echo "   Copy them to your .env.production file"
 echo "   NEVER commit these to version control"
 echo "================================================"
+
 

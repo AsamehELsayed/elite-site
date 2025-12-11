@@ -6,3 +6,4 @@ export default function TermsPage() {
   return <LegalPage variant="terms" />
 }
 
+

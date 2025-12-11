@@ -1,9 +1,9 @@
-# Elite-Mark.com Production Deployment Guide
+# raheedbrides.cloud Production Deployment Guide
 
 ## Prerequisites
 
 1. **Server with Docker installed**
-2. **Domain configured** (elite-mark.com pointing to your server IP)
+2. **Domain configured** (raheedbrides.cloud pointing to your server IP)
 3. **SSL Certificates** (Let's Encrypt recommended)
 4. **Nginx already running** with your existing sites
 
@@ -41,16 +41,16 @@ sudo apt install certbot
 # Stop nginx temporarily
 sudo systemctl stop nginx
 
-# Generate SSL certificate for elite-mark.com
-sudo certbot certonly --standalone -d elite-mark.com -d www.elite-mark.com
+# Generate SSL certificate for raheedbrides.cloud
+sudo certbot certonly --standalone -d raheedbrides.cloud -d www.raheedbrides.cloud
 
 # Start nginx again
 sudo systemctl start nginx
 ```
 
 Certificates will be at:
-- `/etc/letsencrypt/live/elite-mark.com/fullchain.pem`
-- `/etc/letsencrypt/live/elite-mark.com/privkey.pem`
+- `/etc/letsencrypt/live/raheedbrides.cloud/fullchain.pem`
+- `/etc/letsencrypt/live/raheedbrides.cloud/privkey.pem`
 
 ### 3. Build and Start Docker Containers
 
@@ -91,7 +91,7 @@ sudo nano /etc/nginx/sites-available/elite-mark.conf
 
 # Or append to your existing nginx config file
 sudo nano /etc/nginx/nginx.conf
-# Add the elite-mark.com server blocks
+# Add the raheedbrides.cloud server blocks
 
 # Test nginx configuration
 sudo nginx -t
@@ -128,13 +128,13 @@ docker network connect elite-network nginx-container-name
 
 ```bash
 # Check health endpoint
-curl https://elite-mark.com/api/health
+curl https://raheedbrides.cloud/api/health
 
 # Expected response:
 # {"status":"healthy","timestamp":"...","database":"connected","environment":"production"}
 
 # Check main site
-curl -I https://elite-mark.com
+curl -I https://raheedbrides.cloud
 
 # Should return 200 OK
 ```
@@ -334,7 +334,7 @@ OPTIMIZE TABLE User, Testimonial, CaseStudy, Philosophy;
 | MYSQL_PASSWORD | Database password | `secure_db_password_456` |
 | DATABASE_URL | Full database connection string | `mysql://elite_user:password@db-elite:3306/elite_production` |
 | JWT_SECRET | Secret for JWT tokens | `64_character_random_string` |
-| NEXT_PUBLIC_SITE_URL | Public site URL | `https://elite-mark.com` |
+| NEXT_PUBLIC_SITE_URL | Public site URL | `https://raheedbrides.cloud` |
 | NODE_ENV | Environment | `production` |
 
 ## Support
@@ -342,9 +342,9 @@ OPTIMIZE TABLE User, Testimonial, CaseStudy, Philosophy;
 For issues or questions:
 1. Check logs: `docker-compose -f docker-compose.prod.yml logs -f`
 2. Review nginx logs: `sudo tail -f /var/log/nginx/error.log`
-3. Check health endpoint: `curl https://elite-mark.com/api/health`
-4. Verify DNS: `dig elite-mark.com`
-5. Test SSL: `curl -vI https://elite-mark.com`
+3. Check health endpoint: `curl https://raheedbrides.cloud/api/health`
+4. Verify DNS: `dig raheedbrides.cloud`
+5. Test SSL: `curl -vI https://raheedbrides.cloud`
 
 ## Next Steps
 
@@ -354,4 +354,5 @@ For issues or questions:
 4. **Performance testing** - Use tools like Apache Bench or k6
 5. **SEO optimization** - Submit sitemap to Google Search Console
 6. **Analytics** - Setup Google Analytics or alternative
+
 
